@@ -12,10 +12,10 @@ Grove - Dust Sensor Demo v1.0
  JST Pin 4 (Yellow wire) =&gt; //Arduino Digital Pin 8
  */
 
-int pin = 8;
+int pin = 4;
 unsigned long duration;
 unsigned long starttime;
-unsigned long sampletime_ms = 30000;//sampe 30s&nbsp;;
+unsigned long sampletime_ms = 5000;//sampe 30s&nbsp;;
 unsigned long lowpulseoccupancy = 0;
 float ratio = 0;
 float concentration = 0;
@@ -34,7 +34,7 @@ void loop() {
   {
     ratio = lowpulseoccupancy/(sampletime_ms*10.0);  // Integer percentage 0=&gt;100
     concentration = 1.1*pow(ratio,3)-3.8*pow(ratio,2)+520*ratio+0.62; // using spec sheet curve
-    Serial.print("PM1.0 = ");
+    Serial.print("PM2.5 ");
     Serial.print(concentration);
     Serial.println(" pcs/0.01cf");
     lowpulseoccupancy = 0;
