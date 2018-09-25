@@ -35,6 +35,7 @@ typedef struct Resource {
     float lt; // Conditionals for scalar values, see IETF CoRE Dynlink
     float gt;
     float st;
+    unsigned char band;
 
     gpio_t gpio;
     unsigned short gpio_pin;
@@ -43,6 +44,8 @@ typedef struct Resource {
 
     time_t sample_interval; // for sample timing of gpio and function samplers
     time_t last_sample_time;
+
+    unsigned int (*input_function)(); // pointer to a function to update resource->v
 
 } Resource;
 
@@ -58,9 +61,10 @@ Resource R3300_0_5700 = {
   .last_rep_time = 0,
   .pmin = 1,
   .pmax = 5,
-  .lt = 60,
-  .gt = 40,
+  .lt = 20,
+  .gt = 80,
   .st = 1,
+  .band = false,
   .gpio = ain_type,
   .gpio_pin = 3,
   .vmin_counts = 0,
@@ -91,7 +95,7 @@ Resource R3300_2_5700 = {
   .vb = false,
   .last_rep_vb = false,
   .last_rep_time = 0,
-  .pmin = 1,
+  .pmin = 2,
   .pmax = 10,
   .gpio = din_type,
   .gpio_pin = 5,
@@ -150,16 +154,16 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
   if (timestamp - resource->last_rep_time >= resource->pmin) {
 
     if (num_type == resource->type) {
-      // notify on gt crossings
-      if ( (resource->gt < resource->vmax) && // gt == vmax to disable gt limiting
+      // notify on gt crossings, disable if st is > 0, could use band parameter
+      if ( (resource->gt < resource->vmax) && (false == resource->band) && // gt == vmax to disable gt limiting
       ( (resource->v > resource->gt && resource->last_rep_v <= resource->gt)
       || (resource->v <= resource->gt && resource->last_rep_v > resource->gt) ) )
       {
         resource->last_rep_v = resource->v;
         return(true);
       }
-      // notify on lt crossing
-      else if ( (resource->lt > resource->vmin) && // lt == vmin to disable lt limiting
+      // notify on lt crossings, disable if st is > 0, could use band parameter
+      else if ( (resource->lt > resource->vmin) && (false == resource->band) && // lt == vmin to disable lt limiting
       ( (resource->v < resource->lt && resource->last_rep_v >= resource->lt)
       || (resource->v >= resource->lt && resource->last_rep_v < resource->lt) ) )
       {
@@ -168,8 +172,10 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
       }
 
       // notify if in band and if step exceeded
-      else if (
-        ( (resource->v >= resource->gt) && (resource->v <= resource->lt) ) // in band
+      else if ( (
+        ( (resource->v >= resource->gt) && (resource->v <= resource->lt) )
+        ||( (resource->v >= resource->gt) && (resource->gt >= resource->lt) )
+        || ( (resource->v <= resource->lt) && (resource->gt >= resource->lt) ) ) // in band
         && ( resource->v - resource->last_rep_v >= resource->st || resource->last_rep_v - resource->v >= resource->st )
       ) // note step = 0 disables change filtering and notifies every time
       {
