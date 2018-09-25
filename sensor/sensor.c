@@ -129,11 +129,13 @@ unsigned int report_resource (Resource * resource) {
   else if ( bool_type == resource->type )
     printf(resource->vb ? "true\n" : "false\n");
 
+  resource->last_rep_time = resource->last_sample_time;
+
   return(true);
 };
 
 
-unsigned int process_gpio (Resource * resource) {
+unsigned int process_sample (Resource * resource) {
 
   if ( ain_type == resource->gpio ) {
     // read analog input gpio
@@ -162,10 +164,10 @@ unsigned int process_gpio (Resource * resource) {
 };
 
 
-unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
+unsigned int apply_conditionals (Resource * resource) {
 
   // if pmin is not yet exceeded, return indicating no notification
-  if (timestamp - resource->last_rep_time < resource->pmin) {
+  if (resource->last_sample_time - resource->last_rep_time < resource->pmin) {
     return(false);
   }
   if (num_type == resource->type) {
@@ -175,7 +177,6 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
     (resource->v <= resource->gt && resource->last_rep_v > resource->gt) ) )
     {
       resource->last_rep_v = resource->v;
-      resource->last_rep_time = timestamp;
       return(true);
     }
     // notify on lt crossings if not in band mode, lt == vmin to disable lt limiting
@@ -184,7 +185,6 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
     (resource->v >= resource->lt && resource->last_rep_v < resource->lt) ) )
     {
       resource->last_rep_v = resource->v;
-      resource->last_rep_time = timestamp;
       return(true);
     }
     // notify if not in band mode and either step or pmax exceeded
@@ -192,10 +192,9 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
     else if ( false == resource->band &&
       ( ( resource->v - resource->last_rep_v >= resource->st
       || resource->last_rep_v - resource->v >= resource->st )
-      || (timestamp - resource->last_rep_time >= resource->pmax) ) )
+      || (resource->last_sample_time - resource->last_rep_time >= resource->pmax) ) )
     {
       resource->last_rep_v = resource->v;
-      resource->last_rep_time = timestamp;
       return(true);
     }
     // notify if in band mode, and in band, and either step or pmax exceeded
@@ -206,10 +205,9 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
       || ( (resource->v <= resource->lt) && (resource->gt >= resource->lt) ) ) // in band
       && ( ( resource->v - resource->last_rep_v >= resource->st
         || resource->last_rep_v - resource->v >= resource->st )
-        || (timestamp - resource->last_rep_time >= resource->pmax) ) )
+        || (resource->last_sample_time - resource->last_rep_time >= resource->pmax) ) )
     {
       resource->last_rep_v = resource->v;
-      resource->last_rep_time = timestamp;
       return(true);
     }
     else
@@ -220,16 +218,14 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
     // evaluate value change and pmax for boolean and string types
     if ( resource->vb != resource->last_rep_vb ) {
       resource->last_rep_vb = resource->vb;
-      resource->last_rep_time = timestamp;
       return(true);
     }
     else if ( resource->vs != resource->last_rep_vs ) {
       resource->last_rep_vs = resource->vs;
-      resource->last_rep_time = timestamp;
       return(true);
     }
-    else if (timestamp - resource->last_rep_time >= resource->pmax) {
-      resource->last_rep_time = timestamp;
+    else if (resource->last_sample_time - resource->last_rep_time >= resource->pmax) {
+      resource->last_rep_time = resource->last_sample_time;
       return(true); // no value change
     }
     else
@@ -239,12 +235,11 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
 };
 
 unsigned int process_resource (Resource * resource, time_t timestamp) {
-  if (timestamp - resource->last_sample_time > resource->sample_interval) {
-    if (process_gpio(resource)) {
-      if (apply_conditionals(resource, timestamp)) {
-        //resource->last_rep_time = timestamp;
-        report_resource(resource);
-      }
+  if (timestamp - resource->last_sample_time >= resource->sample_interval) {
+    resource->last_sample_time += resource->sample_interval;
+    process_sample(resource);
+    if (apply_conditionals(resource)) {
+      report_resource(resource);
     }
   }
   return(true);
@@ -252,6 +247,9 @@ unsigned int process_resource (Resource * resource, time_t timestamp) {
 
 
 unsigned int init_resource (Resource * resource) {
+
+  time_t init_time = time(NULL);
+  resource->last_sample_time = init_time - resource->sample_interval;
 
   if ( ain_type == resource->gpio ) {
     return(true);
@@ -279,20 +277,18 @@ unsigned int init (void) {
 
 
 unsigned int loop (void) {
-  time_t timestamp = time(NULL);
+  time_t last_wakeup = time(NULL);
   time_t wakeup_interval = 1;
-  time_t last_timestamp = timestamp;
 
   while (true) {
 
     for ( int i = 0; i < ( sizeof(resource_list) / sizeof(resource_list[0]) ); i++) {
-      process_resource (resource_list[i], timestamp);
+      process_resource (resource_list[i], last_wakeup);
     };
 
-    last_timestamp = timestamp;
+    last_wakeup += wakeup_interval;
 
-    while (timestamp - last_timestamp < wakeup_interval) {
-      timestamp = time(NULL);
+    while (time(NULL) - last_wakeup < wakeup_interval) {
     }; // busy wait for the next wakeup interval to pass
 
   }
