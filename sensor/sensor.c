@@ -56,10 +56,10 @@ Resource R3300_0_5700 = {
   .vmax = 100,
   .last_rep_v = 50,
   .last_rep_time = 0,
-  .pmin = 2,
-  .pmax = 10,
-  .lt = 10,
-  .gt = 90,
+  .pmin = 1,
+  .pmax = 5,
+  .lt = 60,
+  .gt = 40,
   .st = 1,
   .gpio = ain_type,
   .gpio_pin = 3,
@@ -143,37 +143,70 @@ unsigned int process_gpio (Resource * resource) {
   else if ( ser_type == resource->gpio ) {
     return(true); // handle serial interface
   }
-  return(true); // if there was a GPIO update
+  return(true); // if there was no GPIO update
 };
 
 unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
   if (timestamp - resource->last_rep_time >= resource->pmin) {
-    // notify if band is crossed
-    if ( (resource->gt < resource->vmax) && // gt == vmax to disable gt limiting
-    ( (resource->v > resource->gt && resource->last_rep_v <= resource->gt)
-    || (resource->v <= resource->gt && resource->last_rep_v > resource->gt) ) )
-      return(true);
-    else if ( (resource->lt > resource->vmin) && // lt == vmin to disable lt limiting
-    ( (resource->v < resource->lt && resource->last_rep_v >= resource->lt)
-    || (resource->v >= resource->lt && resource->last_rep_v < resource->lt) ) )
-      return(true);
-    //notify if step exceeded, only if in band
-    else if (
-      ( (resource->v <= resource->gt) && (resource->v >= resource->lt) ) // in band
-      && ( resource->v - resource->last_rep_v >= resource->st || resource->last_rep_v - resource->v >= resource->st )
-    ) // note step = 0 disables change filtering and notifies every time
-      return(true);
-    // motify if pmax is exceeded
-    else if (timestamp - resource->last_rep_time >= resource->pmax)
-      return(true);
-    else
-      return(false);
+
+    if (num_type == resource->type) {
+      // notify on gt crossings
+      if ( (resource->gt < resource->vmax) && // gt == vmax to disable gt limiting
+      ( (resource->v > resource->gt && resource->last_rep_v <= resource->gt)
+      || (resource->v <= resource->gt && resource->last_rep_v > resource->gt) ) )
+      {
+        resource->last_rep_v = resource->v;
+        return(true);
+      }
+      // notify on lt crossing
+      else if ( (resource->lt > resource->vmin) && // lt == vmin to disable lt limiting
+      ( (resource->v < resource->lt && resource->last_rep_v >= resource->lt)
+      || (resource->v >= resource->lt && resource->last_rep_v < resource->lt) ) )
+      {
+        resource->last_rep_v = resource->v;
+        return(true);
+      }
+
+      // notify if in band and if step exceeded
+      else if (
+        ( (resource->v >= resource->gt) && (resource->v <= resource->lt) ) // in band
+        && ( resource->v - resource->last_rep_v >= resource->st || resource->last_rep_v - resource->v >= resource->st )
+      ) // note step = 0 disables change filtering and notifies every time
+      {
+        resource->last_rep_v = resource->v;
+        return(true);
+      }
+
+      // notify if in band and pmax is exceeded
+      else if ( ( (resource->v >= resource->gt) && (resource->v <= resource->lt) )
+      && (timestamp - resource->last_rep_time >= resource->pmax) )
+      {
+        resource->last_rep_v = resource->v;
+        return(true);
+      }
+
+      // else - no numeric value condition to notify this time
+      else
+        return(false);
+    }
+    else { // boolean or string type
+      if ( resource->vb != resource->last_rep_vb ) {
+        resource->last_rep_vb = resource->vb;
+        return(true);
+      }
+      else if ( resource->vs != resource->last_rep_vs ) {
+        resource->last_rep_vs = resource->vs;
+        return(true);
+      }
+      else if (timestamp - resource->last_rep_time >= resource->pmax) {
+        return(true); // no value change
+      }
+    }
   }
 
-  else { // pmin not yet satisfied
-    return(false);
-  }
-  return(true); // if a report should be generated
+  // pmin not yet satisfied
+  return(false);
+
 };
 
 unsigned int process_resource (Resource * resource, time_t timestamp) {
