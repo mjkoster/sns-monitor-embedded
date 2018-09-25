@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+
 #define true 1
 #define false 0
 
+// resource template
 typedef enum value_t { num_type, str_type, bool_type } value_t;
 typedef enum gpio_t { no_gpio, ain_type, pwm_type, din_type, dout_type, ser_type } gpio_t;
 
@@ -14,19 +16,21 @@ typedef struct Resource {
     short resid;
 
     value_t type;
+
     float v;
-    char* vs;
-    unsigned char vb;
-
-    float last_rep_v;
-    char* last_rep_vs;
-    unsigned char last_rep_vb;
-
     float vmin; // Min and Max range values for conditionals and limiting
     float vmax;
 
+    char* vs;
     unsigned int max_strlen; // to limit string length
+
+    unsigned char vb;
     unsigned char invert; // boolean for inverting the digital sense
+
+    // conditional notifier
+    float last_rep_v;
+    char* last_rep_vs;
+    unsigned char last_rep_vb;
 
     time_t last_rep_time;
     time_t pmin; // Conditionals for report timing, see IETF CoRE Dynlink
@@ -37,18 +41,20 @@ typedef struct Resource {
     float st;
     unsigned char band;
 
+    // synchronous updater, gpio or input function
+    time_t sample_interval; // for sample timing of gpio and function samplers
+    time_t last_sample_time;
+
     gpio_t gpio;
     unsigned short gpio_pin;
     int vmin_counts; // for scaling analog pins to vmin/vmax
     int vmax_counts; // a/d counts corresponding to vmin and vmax
 
-    time_t sample_interval; // for sample timing of gpio and function samplers
-    time_t last_sample_time;
-
     unsigned int (*input_function)(); // pointer to a function to update resource->v
 
 } Resource;
 
+// resource instances
 Resource R3300_0_5700 = {
   .objid = 3300,
   .objinst = 0,
@@ -64,7 +70,7 @@ Resource R3300_0_5700 = {
   .lt = 20,
   .gt = 80,
   .st = 1,
-  .band = false,
+  .band = true,
   .gpio = ain_type,
   .gpio_pin = 3,
   .vmin_counts = 0,
@@ -109,6 +115,7 @@ Resource * resource_list[] = {
   &R3300_2_5700
 };
 
+// resource processing
 unsigned int report_resource (Resource * resource) {
 
   printf ( "%i/%i/%i: ", resource->objid, resource->objinst, resource->resid );
@@ -121,8 +128,8 @@ unsigned int report_resource (Resource * resource) {
     printf(resource->vb ? "true\n" : "false\n");
 
   return(true);
-
 };
+
 
 unsigned int process_gpio (Resource * resource) {
 
@@ -149,6 +156,7 @@ unsigned int process_gpio (Resource * resource) {
   }
   return(true); // if there was no GPIO update
 };
+
 
 unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
   if (timestamp - resource->last_rep_time >= resource->pmin) {
@@ -209,9 +217,9 @@ unsigned int apply_conditionals (Resource * resource, time_t timestamp) {
       }
     }
   }
-
   // pmin not yet satisfied
   return(false);
+
 
 };
 
@@ -226,6 +234,7 @@ unsigned int process_resource (Resource * resource, time_t timestamp) {
   }
   return(true);
 };
+
 
 unsigned int init_resource (Resource * resource) {
 
@@ -245,12 +254,14 @@ unsigned int init_resource (Resource * resource) {
   return(true);
 };
 
+
 unsigned int init (void) {
   for ( int i = 0; i < ( sizeof(resource_list) / sizeof(resource_list[0]) ); i++) {
     init_resource (resource_list[i]);
   };
   return(1);
 };
+
 
 unsigned int loop (void) {
   time_t timestamp = time(NULL);
@@ -272,6 +283,7 @@ unsigned int loop (void) {
   }
   return(1);
 };
+
 
 int main (void) {
 
