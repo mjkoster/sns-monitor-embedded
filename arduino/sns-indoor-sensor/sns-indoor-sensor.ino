@@ -12,6 +12,7 @@ Grove - Dust Sensor Demo v1.0
  JST Pin 4 (Yellow wire) =&gt; //Arduino Digital Pin 8
  */
 
+
 int pin = 4;
 unsigned long duration;
 unsigned long starttime;
@@ -20,10 +21,12 @@ unsigned long lowpulseoccupancy = 0;
 float ratio = 0;
 float concentration = 0;
 
+int illuminance_pin = A0;
 int motion_pin = 7;
 unsigned long motion_starttime;
 unsigned long motion_sampletime = 200;
-int motion;
+int motion = 0;
+int ill_signal;
 int last_motion = 0;
 
 void setup() {
@@ -35,6 +38,7 @@ void setup() {
   
 // motion sensor setup
   pinMode(motion_pin,INPUT);
+  pinMode(illuminance_pin,INPUT);
   motion_starttime = starttime;
 }
 
@@ -57,7 +61,12 @@ void loop() {
 // check motion sensor
   if ((millis()-motion_starttime) >= motion_sampletime)
   {
-    motion = digitalRead(motion_pin);
+//    motion = digitalRead(motion_pin);
+    ill_signal = analogRead(illuminance_pin);
+    motion = 0;
+    if (ill_signal > 50) 
+      motion = 1;
+      
     if (motion != last_motion)
     {
       Serial.print("Motion ");
