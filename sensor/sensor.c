@@ -8,7 +8,7 @@
 
 // resource template
 typedef enum value_t { num_type, str_type, bool_type } value_t;
-typedef enum gpio_t { no_gpio, ain_type, pwm_type, din_type, dout_type, ser_type } gpio_t;
+typedef enum gpio_t { no_gpio, ain_type, pwm_type, din_type, dout_type, ser_type, func_type } gpio_t;
 
 typedef struct Resource {
     short objid; // LWM2M Object ID, Instance, and Resource ID
@@ -52,7 +52,9 @@ typedef struct Resource {
     int vmin_counts; // a/d counts corresponding to vmin
     int vmax_counts; // a/d counts corresponding to vmax
 
-    unsigned int (*input_function)(); // pointer to a function to update resource->v
+    unsigned int (*sample_function)(); // pointer to a function to update resource->v
+    unsigned int (*onupdate)(); // pointer to a function call on updates
+    unsigned int (*onreport)(); // pointer to a function call on reports
 
 } Resource;
 
@@ -87,12 +89,26 @@ Resource R3300_1_5700 = {
   .resid = 5700,
   .type = str_type,
   .max_strlen = 10,
-  .vs = "hot",
-  .last_rep_vs = "hot",
+  .vs = "",
+  .last_rep_vs = "",
   .last_rep_time = 0,
   .pmin = 5,
   .pmax = 10,
+  .gpio = func_type,
+  .sample_interval = 1,
+  .last_sample_time = 0,
+  .sample_function = NULL
 };
+
+unsigned int run_hot_cold () {
+  if ( (int) time(NULL) & 1 ) {
+    R3300_1_5700.vs = "cold";
+  }
+  else {
+    R3300_1_5700.vs = "hot";
+  }
+  return(true);
+}
 
 Resource R3300_2_5700 = {
   .objid = 3300,
@@ -117,6 +133,10 @@ Resource * resource_list[] = {
   &R3300_2_5700
 };
 
+void bind_functions () {
+  R3300_1_5700.sample_function = run_hot_cold;
+};
+
 // resource processing
 unsigned int report_resource (Resource * resource) {
 
@@ -136,8 +156,19 @@ unsigned int report_resource (Resource * resource) {
 
 
 unsigned int process_sample (Resource * resource) {
+/*
+drives sampling of resources based on a GPIO pin or function call.
+A/D counts ace scaled to vmin/vmax based on vmin_coiuunts and vmax_counts
+parameters. Normallt vmin_counts will be 0 and vmax_couts will be 1023
+but this can be adapted to various sensors.
+*/
+  if ( ( dout_type == resource->gpio ) ||
+  ( pwm_type == resource->gpio ) ||
+  ( no_gpio == resource->gpio ) ) {
+    return(true);
+  }
 
-  if ( ain_type == resource->gpio ) {
+  else if ( ain_type == resource->gpio ) {
     // read analog input gpio
     int counts = round ( ( (float) rand() / (float) RAND_MAX ) * 1023 );
     // pre-calculate the counts scale and the value scale
@@ -157,6 +188,10 @@ unsigned int process_sample (Resource * resource) {
   }
   else if ( ser_type == resource->gpio ) {
     return(true); // handle serial interface
+  }
+  else if ( func_type == resource->gpio ) {
+    resource->sample_function();
+    return(true); // handle function call interface
   }
   else {
     return(true); // if there was no GPIO update
@@ -187,7 +222,7 @@ unsigned int apply_conditionals (Resource * resource) {
       resource->last_rep_v = resource->v;
       return(true);
     }
-    // notify if not in band mode and either step or pmax exceeded
+    // notify on either step or pmax exceeded if not in band mode
     // set step == 0 to disable value filtering
     else if ( false == resource->band &&
       ( ( resource->v - resource->last_rep_v >= resource->st
@@ -197,7 +232,7 @@ unsigned int apply_conditionals (Resource * resource) {
       resource->last_rep_v = resource->v;
       return(true);
     }
-    // notify if in band mode, and in band, and either step or pmax exceeded
+    // notify on either step or pmax exceeded if in band mode and in band
     // set step == 0 to disable value filtering
     else if ( true == resource->band && (
       ( (resource->v >= resource->gt) && (resource->v <= resource->lt) )
@@ -234,6 +269,7 @@ unsigned int apply_conditionals (Resource * resource) {
   }
 };
 
+
 unsigned int process_resource (Resource * resource, time_t timestamp) {
   if (timestamp - resource->last_sample_time >= resource->sample_interval) {
     resource->last_sample_time += resource->sample_interval;
@@ -263,12 +299,12 @@ unsigned int init_resource (Resource * resource) {
   else if ( dout_type == resource->gpio ) {
     return(true);
   }
-
   return(true);
 };
 
 
 unsigned int init (void) {
+  bind_functions();
   for ( int i = 0; i < ( sizeof(resource_list) / sizeof(resource_list[0]) ); i++) {
     init_resource (resource_list[i]);
   };
@@ -286,11 +322,9 @@ unsigned int loop (void) {
       process_resource (resource_list[i], last_wakeup);
     };
 
-    last_wakeup += wakeup_interval;
-
     while (time(NULL) - last_wakeup < wakeup_interval) {
     }; // busy wait for the next wakeup interval to pass
-
+    last_wakeup += wakeup_interval;
   }
   return(1);
 };
