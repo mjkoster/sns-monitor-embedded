@@ -28,19 +28,14 @@ boolean receive_input(Stream *s) {
   if ( ! s->available() ) {
     return(false);
   }
-  s->setTimeout(100);
+  s->setTimeout(10);
   process_input( s );
 }
 
-void process_input (Stream *s) {
+void process_input ( Stream *s ) {
   uint8_t input_buffer[BUFSIZE];
   unsigned int length = s->readBytes( input_buffer, BUFSIZE );
   CborBuffer buffer(BUFSIZE);
-  s->print("bytes ");
-  for (int i=0; i<length; i++) {
-    s->print(input_buffer[i], HEX);
-  }
-  s->println(" <=");
   CborVariant cbor_pack = buffer.decode( input_buffer, length );
   if ( ! cbor_pack.isArray() ) {
     s->print("Not array type pack 0x");
@@ -48,11 +43,51 @@ void process_input (Stream *s) {
     return;
   }
   else {
-    s->print("Array Type Length ");
-    s->println(cbor_pack.length() );
+    int length = cbor_pack.length();
+    CborArray outer = cbor_pack.asArray();
+    for ( int i=0; i<length; i++) {
+      if (! outer.get(i).isObject()) {
+        Serial.println("Not Object");
+        return;
+      }
+      else
+        process_item( outer.get(i).asObject() );
+    }
   }
   return;
 }
+
+void process_item( CborObject item ) {
+  Serial.print("process_item ");
+  int objid = item.get("bn").asArray().get(0).asInteger() ;
+  int objinst = item.get("bn").asArray().get(1).asInteger() ;
+  int resid = item.get("bn").asArray().get(2).asInteger() ;
+  
+  if ( item.get("vb").isInteger() ) {
+    boolean vb = item.get("vb").asInteger();
+    if ( vb != 0 || vb != 1 ) {
+      return;
+    }
+    else {
+      
+    }
+    Serial.println("vb=integer");
+  }
+  else if ( item.get("vs").isString() ) {
+    Serial.println("vs=string");
+  }
+  else if ( item.get("v").isInteger() ) {
+    Serial.println("v=integer");
+  }
+  else if ( item.get("v").isValid() ) {
+    Serial.println("v=other");
+  }
+  else {
+    Serial.println("?");
+  }
+  return;
+}
+
 
 /* 
  *  resource sampling and report processing
