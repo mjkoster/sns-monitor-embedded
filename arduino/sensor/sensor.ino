@@ -28,13 +28,15 @@ boolean receive_input(Stream *s) {
   if ( ! s->available() ) {
     return(false);
   }
-  s->setTimeout(10);
+  s->setTimeout(100);
   process_input( s );
 }
 
 void process_input ( Stream *s ) {
   uint8_t input_buffer[BUFSIZE];
   unsigned int length = s->readBytes( input_buffer, BUFSIZE );
+  Serial.print("length "); 
+  Serial.println(length);
   CborBuffer buffer(BUFSIZE);
   CborVariant cbor_pack = buffer.decode( input_buffer, length );
   if ( ! cbor_pack.isArray() ) {
@@ -43,7 +45,7 @@ void process_input ( Stream *s ) {
     return;
   }
   else {
-    int length = cbor_pack.length();
+    unsigned int length = cbor_pack.length();
     CborArray outer = cbor_pack.asArray();
     for ( int i=0; i<length; i++) {
       if (! outer.get(i).isObject()) {
@@ -58,29 +60,33 @@ void process_input ( Stream *s ) {
 }
 
 void process_item( CborObject item ) {
-  Serial.print("process_item ");
+  Serial.print("item ");
   int objid = item.get("bn").asArray().get(0).asInteger() ;
   int objinst = item.get("bn").asArray().get(1).asInteger() ;
   int resid = item.get("bn").asArray().get(2).asInteger() ;
   
   if ( item.get("vb").isInteger() ) {
     boolean vb = item.get("vb").asInteger();
-    if ( vb != 0 || vb != 1 ) {
-      return;
+    if ( 0 == vb || 1 == vb ) {
+      Serial.print("vb=integer ");
+      Serial.println( item.get("vb").asInteger() );
     }
-    else {
-      
-    }
-    Serial.println("vb=integer");
   }
   else if ( item.get("vs").isString() ) {
-    Serial.println("vs=string");
+    Serial.print("vs=string ");
+    Serial.println( item.get("vs").asString() );
   }
   else if ( item.get("v").isInteger() ) {
-    Serial.println("v=integer");
+    Serial.print("v=integer ");
+    Serial.println( item.get("v").asInteger() );
   }
-  else if ( item.get("v").isValid() ) {
-    Serial.println("v=other");
+  else if ( item.get("v").isFloat() ) {
+    Serial.print("v=float ");
+    Serial.println( item.get("v").asFloat() );
+  }
+  else if ( item.get("vb").isBoolean() ) {
+    Serial.print("vb=boolean ");
+    Serial.println( item.get("vb").asBoolean() );
   }
   else {
     Serial.println("?");
@@ -101,13 +107,19 @@ unsigned int report_resource (Resource * resource, Stream *s) {
   s->print (resource->resid);
   s->print (": ");
 
-  if ( num_type == resource->type )
+  if ( num_type == resource->type ) {
     s->println(resource->v);
-  else if ( str_type == resource->type )
+    resource->last_rep_v = resource->v;
+  }
+  else if ( str_type == resource->type ) {
     s->println(resource->vs);
-  else if ( bool_type == resource->type )
-    s->println(resource->vb ? "true" : "false");
+    resource->last_rep_vs = resource->vs;
+  }
 
+  else if ( bool_type == resource->type ) {
+    s->println(resource->vb ? "true" : "false");
+    resource->last_rep_vb = resource->vb;
+  }
   resource->last_rep_time = resource->last_sample_time;
 
   return(true);
@@ -159,84 +171,40 @@ but this can be adapted to various sensors.
   }
 }
 
+bool notifiable( Resource * r ) {
 
-unsigned int apply_conditionals (Resource * resource) {
+#define BAND r->band
+#define SCALAR_TYPE ( num_type == r->type )
+#define STRING_TYPE ( str_type == r->type )
+#define BOOLEAN_TYPE ( bool_type == r->type )
+#define PMIN_EX ( r->last_sample_time - r->last_rep_time >= r->pmin )
+#define PMAX_EX ( r->last_sample_time - r->last_rep_time > r->pmax )
+#define LT_EX ( r->v < r->lt ^ r->last_rep_v < r->lt )
+#define GT_EX ( r->v > r->gt ^ r->last_rep_v > r->gt )
+#define ST_EX ( abs( r->v - r->last_rep_v ) >= r->st )
+#define IN_BAND ( ( r->gt <= r->v && r->v <= r->lt ) || ( r->v >= r->gt && r->gt >= r->lt ) || ( r->v <= r->lt && r->lt <= r->gt ) )
+#define VB_CHANGE ( r->vb != r->last_rep_vb )
+#define VS_CHANGE ( r->vs != r->last_rep_vs )
 
-  // if pmin is not yet exceeded, return indicating no notification
-  if (resource->last_sample_time - resource->last_rep_time < resource->pmin) {
-    return(false);
-  }
-  if (num_type == resource->type) {
-    // notify on gt crossings if not in band mode, gt == vmax to disable gt limiting
-    if (  (false == resource->band) && (resource->gt < resource->vmax) &&
-    ( (resource->v > resource->gt && resource->last_rep_v <= resource->gt) ||
-    (resource->v <= resource->gt && resource->last_rep_v > resource->gt) ) )
-    {
-      resource->last_rep_v = resource->v;
-      return(true);
-    }
-    // notify on lt crossings if not in band mode, lt == vmin to disable lt limiting
-    else if ( (false == resource->band) && (resource->lt > resource->vmin) &&
-    ( (resource->v < resource->lt && resource->last_rep_v >= resource->lt) ||
-    (resource->v >= resource->lt && resource->last_rep_v < resource->lt) ) )
-    {
-      resource->last_rep_v = resource->v;
-      return(true);
-    }
-    // notify on either step or pmax exceeded if not in band mode
-    // set step == 0 to disable value filtering
-    else if ( false == resource->band &&
-      ( ( resource->v - resource->last_rep_v >= resource->st
-      || resource->last_rep_v - resource->v >= resource->st )
-      || (resource->last_sample_time - resource->last_rep_time >= resource->pmax) ) )
-    {
-      resource->last_rep_v = resource->v;
-      return(true);
-    }
-    // notify on either step or pmax exceeded if in band mode and in band
-    // set step == 0 to disable value filtering
-    else if ( true == resource->band && (
-      ( (resource->v >= resource->gt) && (resource->v <= resource->lt) )
-      ||( (resource->v >= resource->gt) && (resource->gt >= resource->lt) )
-      || ( (resource->v <= resource->lt) && (resource->gt >= resource->lt) ) ) // in band
-      && ( ( resource->v - resource->last_rep_v >= resource->st
-        || resource->last_rep_v - resource->v >= resource->st )
-        || (resource->last_sample_time - resource->last_rep_time >= resource->pmax) ) )
-    {
-      resource->last_rep_v = resource->v;
-      return(true);
-    }
-    else
-      // no numeric value condition to notify
-      return(false);
-  }
-  else {
-    // evaluate value change and pmax for boolean and string types
-    if ( resource->vb != resource->last_rep_vb ) {
-      resource->last_rep_vb = resource->vb;
-      return(true);
-    }
-    else if ( resource->vs != resource->last_rep_vs ) {
-      resource->last_rep_vs = resource->vs;
-      return(true);
-    }
-    else if (resource->last_sample_time - resource->last_rep_time >= resource->pmax) {
-      resource->last_rep_time = resource->last_sample_time;
-      return(true); // no value change
-    }
-    else
-      // no notifiable value type
-      return(false);
-  }
+  return (
+    PMIN_EX &&
+    ( SCALAR_TYPE ?
+      ( ( !BAND && ( GT_EX || LT_EX || ST_EX || PMAX_EX ) ) ||
+        ( BAND && IN_BAND && ( ST_EX || PMAX_EX) ) )
+    : STRING_TYPE ?
+      ( VS_CHANGE || PMAX_EX )
+    : BOOLEAN_TYPE ?
+      ( VB_CHANGE || PMAX_EX )
+    : false )
+  );
 }
-
 
 unsigned int process_resource (Resource * resource, time_t timestamp) {
   if (timestamp - resource->last_sample_time >= resource->sample_interval) {
     resource->last_sample_time += resource->sample_interval;
     process_sample(resource);
-    if (apply_conditionals(resource)) {
-      report_resource(resource, &Serial);
+    if ( notifiable(resource) ) {
+      report_resource( resource, &Serial );
     }
   }
   return(true);
@@ -281,7 +249,7 @@ void setup() {
 
 void loop() {
   time_t last_wakeup = millis();
-  time_t wakeup_interval = 1;
+  time_t wakeup_interval = 1000;
 
   while (true) {
 
