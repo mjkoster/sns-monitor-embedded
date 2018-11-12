@@ -3,7 +3,7 @@ WoT Plugfest Arduino Sensors demo
  */
 
 // gpio sensor variables
-int spl_pin = A4;
+int spl_pin = A0;
 int illuminance_pin = A1;
 int motion_pin = 7;
 int illuminance, motion, spl, last_illuminance, last_motion, last_spl = 0;
