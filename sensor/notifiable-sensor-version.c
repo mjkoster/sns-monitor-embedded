@@ -15,7 +15,7 @@ bool notifiable( Resource * r ) {
 #define VS_CHANGE ( r->vs != r->last_rep_vs )
 
   return (
-    PMIN &&
+    PMIN_EX &&
     ( SCALAR_TYPE ?
       ( ( !BAND && ( GT_EX || LT_EX || ST_EX || PMAX_EX ) ) ||
         ( BAND && IN_BAND && ( ST_EX || PMAX_EX) ) )

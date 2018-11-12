@@ -26,13 +26,13 @@ bool notifiable() {
   #define GT_EX ( v > gt ^ v_last > gt )
   #define ST_EX ( abs( v - v_last ) >= st )
   #define IN_BAND ( ( gt <= v && v <= lt ) || \
-                  ( v >= gt && gt >= lt ) || \
+                  ( lt <= gt && gt <= v ) || \
                   ( v <= lt && lt <= gt ) )
   #define VB_CHANGE ( r->vb != r->last_rep_vb )
   #define VS_CHANGE ( r->vs != r->last_rep_vs )
 
   return (
-    PMIN &&
+    PMIN_EX &&
     ( SCALAR_TYPE ?
       ( ( !BAND && ( GT_EX || LT_EX || ST_EX || PMAX_EX ) ) ||
         ( BAND && IN_BAND && ( ST_EX || PMAX_EX) ) )

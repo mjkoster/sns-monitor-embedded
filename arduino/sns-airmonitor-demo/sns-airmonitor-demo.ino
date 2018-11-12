@@ -9,14 +9,14 @@
 #define false 0
 
 /*
- * the resources.h file contains the resource struct definition and the instance definitions
- */
-#include "resources.h"
-
-/*
  * the functions file contains resource specific functions and handlers
  */
 #include "functions.h"
+
+/*
+ * the resources.h file contains the resource struct definition and the instance definitions
+ */
+#include "resources.h"
 
 
 /* 
@@ -245,28 +245,23 @@ unsigned int init_resource (Resource * resource) {
 void setup() {
   
   Serial.begin(9600);
-  
   for ( int i = 0; i < ( sizeof(resource_list) / sizeof(resource_list[0]) ); i++) {
     init_resource (resource_list[i]);
   };
   return(1);
 }
 
+time_t last_wakeup = millis();
+time_t wakeup_interval = 100;
 
 void loop() {
-  time_t last_wakeup = millis();
-  time_t wakeup_interval = 1000;
+  for ( int i = 0; i < ( sizeof(resource_list) / sizeof(resource_list[0]) ); i++) {
+    process_resource (resource_list[i], last_wakeup);
+  };
 
-  while (true) {
-
-    for ( int i = 0; i < ( sizeof(resource_list) / sizeof(resource_list[0]) ); i++) {
-      process_resource (resource_list[i], last_wakeup);
-    };
-
-    while (millis() - last_wakeup < wakeup_interval) {
-      receive_input(&Serial);
-    }; // busy wait for the next wakeup interval to pass
-    last_wakeup += wakeup_interval;
-  }
-  return(1);
+  while (millis() - last_wakeup < wakeup_interval) {
+    receive_input(&Serial);
+  }; // busy wait for the next wakeup interval to pass
+  //last_wakeup += wakeup_interval;
+  last_wakeup = millis();
 }
