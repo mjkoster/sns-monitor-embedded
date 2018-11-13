@@ -57,12 +57,608 @@ typedef struct Resource {
  * resource instances
  */
 
+// am2302 temperature
+Resource R3303_0_5700 = {
+  3303,  // objid
+  0,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  500, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  500, // gt
+  1, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  0, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// am2302 humidity
+Resource R3304_0_5700 = {
+  3304,  // objid
+  0,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  500, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  500, // gt
+  1, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  0, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MQ-5
+Resource R3325_0_5700 = {
+  3325,  // objid
+  0,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  10000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  56, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MQ-9
+Resource R3325_1_5700 = {
+  3325,  // objid
+  1,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  10000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  54, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MQ-2
+Resource R3325_2_5700 = {
+  3325,  // objid
+  2,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  10000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  55, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// SGP30 COeq
+Resource R3325_3_5700 = {
+  3325,  // objid
+  3,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  60000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  60000, // gt
+  100, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// SGP30 TVOC
+Resource R3325_4_5700 = {
+  3325,  // objid
+  4,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  60, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  60, // gt
+  0.5, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 CO
+Resource R3325_5_5700 = {
+  3325,  // objid
+  5,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  1000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 N02
+Resource R3325_6_5700 = {
+  3325,  // objid
+  6,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  10, // gt
+  0.1, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 C2H6OH
+Resource R3325_7_5700 = {
+  3325,  // objid
+  7,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  10, // gt
+  0.1, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 H2
+Resource R3325_8_5700 = {
+  3325,  // objid
+  8,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  1000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 NH3
+Resource R3325_9_5700 = {
+  3325,  // objid
+  9,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  500, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  500, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 CH4
+Resource R3325_10_5700 = {
+  3325,  // objid
+  10,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  1000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 C3H8
+Resource R3325_11_5700 = {
+  3325,  // objid
+  11,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  1000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 C4H10
+Resource R3325_12_5700 = {
+  3325,  // objid
+  12,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  10000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// WSP2110
+Resource R3325_13_5700 = {
+  3325,  // objid
+  13,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  50, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  50, // gt
+  0.5, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  58, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MP503
+Resource R3325_14_5700 = {
+  3325,  // objid
+  14,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  1000, // gt
+  10, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  57, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// pms5003 PM1.0
 Resource R3325_15_5700 = {
   3325,  // objid
   15,  // objinst
   5700, // resid
   num_type, // type
-  50, // v
+  0, // v
   0, //vmin
   500, //vmax
   "", // vs
@@ -91,12 +687,13 @@ Resource R3325_15_5700 = {
   NULL // *onreport
 };
 
+// pms5003 PM2.5
 Resource R3325_16_5700 = {
   3325,  // objid
   16,  // objinst
   5700, // resid
   num_type, // type
-  50, // v
+  0, // v
   0, //vmin
   500, //vmax
   "", // vs
@@ -125,12 +722,13 @@ Resource R3325_16_5700 = {
   NULL // *onreport
 };
 
+// pms5003 PM10
 Resource R3325_17_5700 = {
   3325,  // objid
   17,  // objinst
   5700, // resid
   num_type, // type
-  50, // v
+  0, // v
   0, //vmin
   500, //vmax
   "", // vs
@@ -159,9 +757,62 @@ Resource R3325_17_5700 = {
   NULL // *onreport
 };
 
+// hp206c
+Resource R3315_0_5700 = {
+  3315,  // objid
+  0,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  900, //vmin
+  1100, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  1000, // pmin
+  5000, // pmax
+  0, // lt
+  500, // gt
+  1, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  0, // vmax_counts
+  NULL, // *init_function
+  hp206c_get_barometer, // *sample_function
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
 
 Resource * resource_list[] = {
+  &R3303_0_5700,
+  &R3304_0_5700,
+  &R3325_0_5700,
+  &R3325_1_5700,
+  &R3325_2_5700,
+  &R3325_3_5700,
+  &R3325_4_5700,
+  &R3325_5_5700,
+  &R3325_6_5700,
+  &R3325_7_5700,
+  &R3325_8_5700,
+  &R3325_9_5700,
+  &R3325_10_5700,
+  &R3325_11_5700,
+  &R3325_12_5700,
+  &R3325_13_5700,
+  &R3325_14_5700,
   &R3325_15_5700,
   &R3325_16_5700,
-  &R3325_17_5700
+  &R3325_17_5700,
+  &R3315_0_5700
 };

@@ -117,3 +117,48 @@ uint16_t pms5003_get_pm10_0(){
   return(pms5003_data.pm100_standard);
 }
 
+float sgp30_get_coeq() {
+  return(0);
+}
+
+float sgp30_get_tvoc() {
+  return(0);
+}
+
+float mics_6814_get_co() {
+  return(0);
+}
+
+float mics_6814_get_no2() {
+  return(0);
+}
+
+float mics_6814_get_c2h6oh() {
+  return(0);
+}
+
+float mics_6814_get_h2() {
+  return(0);
+}
+
+float mics_6814_get_nh3() {
+  return(0);
+}
+
+float mics_6814_get_ch4() {
+  return(0);
+}
+
+float mics_6814_get_c3h8() {
+  return(0);
+}
+
+float mics_6814_get_c4h10() {
+  return(0);
+}
+
+float hp206c_get_barometer() {
+  return(0);
+}
+
+
