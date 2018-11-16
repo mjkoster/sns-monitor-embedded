@@ -86,8 +86,8 @@ Resource R3303_0_5700 = {
   0, // gpio_pin
   0, // vmin_counts
   0, // vmax_counts
-  NULL, // *init_function
-  NULL, // *sample_function
+  am2302_setup, // *init_function
+  am2302_get_temperature, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -122,7 +122,7 @@ Resource R3304_0_5700 = {
   0, // vmin_counts
   0, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  am2302_get_humidity, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -261,8 +261,8 @@ Resource R3325_3_5700 = {
   0, // gpio_pin
   0, // vmin_counts
   1023, // vmax_counts
-  NULL, // *init_function
-  NULL, // *sample_function
+  sgp30_setup, // *init_function
+  sgp30_get_coeq, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -297,7 +297,7 @@ Resource R3325_4_5700 = {
   0, // vmin_counts
   1023, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  sgp30_get_tvoc, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -331,8 +331,8 @@ Resource R3325_5_5700 = {
   0, // gpio_pin
   0, // vmin_counts
   1023, // vmax_counts
-  NULL, // *init_function
-  NULL, // *sample_function
+  mics6814_setup, // *init_function
+  mics6814_get_co, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -367,7 +367,7 @@ Resource R3325_6_5700 = {
   0, // vmin_counts
   1023, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  mics6814_get_no2, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -402,7 +402,7 @@ Resource R3325_7_5700 = {
   0, // vmin_counts
   1023, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  mics6814_get_c2h5oh, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -437,7 +437,7 @@ Resource R3325_8_5700 = {
   0, // vmin_counts
   1023, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  mics6814_get_h2, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -472,7 +472,7 @@ Resource R3325_9_5700 = {
   0, // vmin_counts
   1023, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  mics6814_get_nh3, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -507,7 +507,7 @@ Resource R3325_10_5700 = {
   0, // vmin_counts
   1023, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  mics6814_get_ch4, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -542,7 +542,7 @@ Resource R3325_11_5700 = {
   0, // vmin_counts
   1023, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  mics6814_get_c3h8, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -577,7 +577,7 @@ Resource R3325_12_5700 = {
   0, // vmin_counts
   1023, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  mics6814_get_c4h10, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -681,7 +681,7 @@ Resource R3325_15_5700 = {
   0, // gpio_pin
   0, // vmin_counts
   0, // vmax_counts
-  setup_pms5003, // *init_function
+  pms5003_setup, // *init_function
   pms5003_get_pm1_0, // *sample_function
   NULL, // *onupdate
   NULL // *onreport
@@ -786,7 +786,7 @@ Resource R3315_0_5700 = {
   0, // gpio_pin
   0, // vmin_counts
   0, // vmax_counts
-  NULL, // *init_function
+  hp206c_setup, // *init_function
   hp206c_get_barometer, // *sample_function
   NULL, // *onupdate
   NULL // *onreport

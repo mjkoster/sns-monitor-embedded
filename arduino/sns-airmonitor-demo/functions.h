@@ -21,71 +21,43 @@ struct pms5003data {
  
 struct pms5003data pms5003_data;
 
-void setup_pms5003() {
+void pms5003_setup() {
   //setup the input buffer
   pms5003_buffer_index = 0;
   Serial3.begin(9600);
-  pinMode(2, OUTPUT);
+  pinMode(2, OUTPUT); // put it in and out of sleep mode to synchronize the output
   digitalWrite(2, LOW);
   delayMicroseconds(100);
   digitalWrite(2, HIGH);
 }
 
-void process_pms5003_buffer() {
+void pms5003_process_buffer() {
   
-  // get checksum ready
+  // checksum
   uint16_t sum = 0;
   for (uint8_t i=0; i<30; i++) {
     sum += pms5003_buffer[i];
   }
- 
-  /* debugging
-  for (uint8_t i=2; i<32; i++) {
-    Serial.print("0x"); Serial.print(pms5003_buffer[i], HEX); Serial.print(", ");
-  }
-  Serial.println();
-  */
-  
-  // The data comes in endian'd, this solves it so it works on all platforms
+   
+  // this works on any byte order platform
   for (uint8_t i=0; i<15; i++) {
     pms5003_buffer_u16[i] = pms5003_buffer[2 + i*2 + 1];
     pms5003_buffer_u16[i] += (pms5003_buffer[2 + i*2] << 8);
   }
  
-  // put it into a nice struct :)
+  // load the struct
   memcpy((void *)&pms5003_data, (void *)pms5003_buffer_u16, 30);
  
   if (sum != pms5003_data.checksum) {
     Serial.println("Checksum failure");
   }
-  else {
-    /*
-    Serial.println("---------------------------------------");
-    Serial.println("Concentration Units (standard)");
-    Serial.print("PM 1.0: "); Serial.print(pms5003_data.pm10_standard);
-    Serial.print("\t\tPM 2.5: "); Serial.print(pms5003_data.pm25_standard);
-    Serial.print("\t\tPM 10: "); Serial.println(pms5003_data.pm100_standard);
-    Serial.println("---------------------------------------");
-    Serial.println("Concentration Units (environmental)");
-    Serial.print("PM 1.0: "); Serial.print(pms5003_data.pm10_env);
-    Serial.print("\t\tPM 2.5: "); Serial.print(pms5003_data.pm25_env);
-    Serial.print("\t\tPM 10: "); Serial.println(pms5003_data.pm100_env);
-    Serial.println("---------------------------------------");
-    Serial.print("Particles > 0.3um / 0.1L air:"); Serial.println(pms5003_data.particles_03um);
-    Serial.print("Particles > 0.5um / 0.1L air:"); Serial.println(pms5003_data.particles_05um);
-    Serial.print("Particles > 1.0um / 0.1L air:"); Serial.println(pms5003_data.particles_10um);
-    Serial.print("Particles > 2.5um / 0.1L air:"); Serial.println(pms5003_data.particles_25um);
-    Serial.print("Particles > 5.0um / 0.1L air:"); Serial.println(pms5003_data.particles_50um);
-    Serial.print("Particles > 10.0 um / 0.1L air:"); Serial.println(pms5003_data.particles_100um);
-    Serial.println("---------------------------------------");    
-    */
-  }
+  return;
 }
 
 void serialEvent3() {
-  //PMS5003 serial data handler
-  // get all the bytes and put them in the buffer
-  // when the buffer is full to the expected size, check the content and update the resource state variables
+  // PMS5003 serial data handler
+  // skip over any leading bytes that are not the 0x42 start flag; then get bytes and put them in the buffer
+  // when the buffer is full to the expected size, check the contents and process the buffer
   // 
   while (Serial3.available()) {
   // get the new byte:
@@ -96,69 +68,138 @@ void serialEvent3() {
   }
   // check to see if the expected number of bytes have been recieved
   if ( pms5003_buffer_index >= PMS5003_BUFSIZE) {
-    process_pms5003_buffer();
+    pms5003_process_buffer();
     pms5003_buffer_index = 0;
     break;
     }
   }
 }
 
-//pms5003 accessors
-
 uint16_t pms5003_get_pm1_0(){
-  return(pms5003_data.pm10_standard);
+  return(pms5003_data.pm10_standard); // ug/m3
 }
 
 uint16_t pms5003_get_pm2_5(){
-  return(pms5003_data.pm25_standard);
+  return(pms5003_data.pm25_standard); // ug/m3
 }
 
 uint16_t pms5003_get_pm10_0(){
-  return(pms5003_data.pm100_standard);
+  return(pms5003_data.pm100_standard); // ug/m3
+}
+
+
+// am2302
+#include "DHT.h"
+#define DHTPIN 8     // what digital pin we're connected to
+#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
+DHT dht(DHTPIN, DHTTYPE);
+
+void am2302_setup() {
+  dht.begin();
+  return;
+}
+
+float am2302_get_temperature() {
+  return(dht.readTemperature()); // C
+}
+
+float am2302_get_humidity() {
+  return(dht.readHumidity());  // %RH
+}
+
+
+// sgp30
+#include "Adafruit_SGP30.h"
+Adafruit_SGP30 sgp30;
+  
+void sgp30_setup() {
+    if (! sgp30.begin()){
+    Serial.println("Sensor not found :(");
+  }
+  return;
 }
 
 float sgp30_get_coeq() {
-  return(0);
+  if (! sgp30.IAQmeasure()) {
+    Serial.println("Measurement failed");
+    return(-1);
+  }
+  return(sgp30.eCO2); // ppm
 }
 
 float sgp30_get_tvoc() {
-  return(0);
+  if (! sgp30.IAQmeasure()) {
+    Serial.println("Measurement failed");
+    return(-1);
+  }
+  return(sgp30.TVOC/1000.0); // ppb converted to to ppm
 }
 
-float mics_6814_get_co() {
-  return(0);
+
+// mics 6814
+#include "MutichannelGasSensor.h"
+
+void mics6814_setup() {
+  gas.begin(0x04);//the default I2C address of the slave is 0x04
+  gas.powerOn();
+  return;
 }
 
-float mics_6814_get_no2() {
-  return(0);
+float mics6814_get_co() {
+  return(gas.measure_CO());
 }
 
-float mics_6814_get_c2h6oh() {
-  return(0);
+float mics6814_get_no2() {
+  return(gas.measure_NH3());
 }
 
-float mics_6814_get_h2() {
-  return(0);
+float mics6814_get_c2h5oh() {
+  return(gas.measure_C2H5OH());
 }
 
-float mics_6814_get_nh3() {
-  return(0);
+float mics6814_get_h2() {
+  return(gas.measure_H2());
 }
 
-float mics_6814_get_ch4() {
-  return(0);
+float mics6814_get_nh3() {
+  return(gas.measure_NH3());
 }
 
-float mics_6814_get_c3h8() {
-  return(0);
+float mics6814_get_ch4() {
+  return(gas.measure_CH4());
 }
 
-float mics_6814_get_c4h10() {
-  return(0);
+float mics6814_get_c3h8() {
+  return(gas.measure_C3H8());
+}
+
+float mics6814_get_c4h10() {
+  return(gas.measure_C4H10());
+}
+
+
+// HP206C
+#include <HP20x_dev.h>
+#include <KalmanFilter.h>
+
+void hp206c_setup() {
+  HP20x.begin();
+  delay(100);
+  if( OK_HP20X_DEV != HP20x.isAvailable() ) {
+    Serial.println("hp206C failed to setup");
+  }
+  return;
+}
+
+float hp206c_get_temperature() {
+  return(((float)HP20x.ReadTemperature())/100.0 ); // C
 }
 
 float hp206c_get_barometer() {
-  return(0);
+  return(((float)HP20x.ReadPressure())/100.0 ); // hPa
 }
 
+float hp206c_get_altitude() {
+  return(((float)HP20x.ReadAltitude())/100.0 ); // m
+}
 

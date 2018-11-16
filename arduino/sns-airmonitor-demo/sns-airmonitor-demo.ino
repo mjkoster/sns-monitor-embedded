@@ -166,7 +166,16 @@ but this can be adapted to various sensors.
     return(true); // handle serial interface
   }
   else if ( func_type == resource->gpio ) {
-    resource->sample_function(resource);
+    
+    if (num_type == resource->type ) {
+      resource->v = resource->sample_function(resource);
+    }
+    else if ( str_type == resource->type ) {
+      resource->vs = resource->sample_function(resource);
+    }
+    else if ( bool_type == resource->type ) {
+      resource->vb = resource->sample_function(resource);
+    }
     return(true); // handle function call interface
   }
   else {
@@ -239,29 +248,30 @@ unsigned int init_resource (Resource * resource) {
     resource->init_function(resource);
   }
   return(true);
-};
+}
 
+
+time_t last_wakeup;
+time_t wakeup_interval = 100;
 
 void setup() {
   
   Serial.begin(9600);
   for ( int i = 0; i < ( sizeof(resource_list) / sizeof(resource_list[0]) ); i++) {
     init_resource (resource_list[i]);
-  };
+  }
+  last_wakeup = millis();
   return(1);
 }
-
-time_t last_wakeup = millis();
-time_t wakeup_interval = 100;
 
 void loop() {
   for ( int i = 0; i < ( sizeof(resource_list) / sizeof(resource_list[0]) ); i++) {
     process_resource (resource_list[i], last_wakeup);
-  };
+  }
 
   while (millis() - last_wakeup < wakeup_interval) {
     receive_input(&Serial);
-  }; // busy wait for the next wakeup interval to pass
-  //last_wakeup += wakeup_interval;
-  last_wakeup = millis();
+  } // busy wait for the next wakeup interval to pass
+  last_wakeup += wakeup_interval; // keep the relative time of each wakeup
+  // last_wakeup = millis(); // slip time rather than get behind
 }
