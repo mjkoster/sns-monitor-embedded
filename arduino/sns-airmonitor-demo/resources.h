@@ -75,13 +75,13 @@ Resource R3303_0_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  60000, // pmax
   0, // lt
   500, // gt
-  2, // st
+  1, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -111,13 +111,13 @@ Resource R3304_0_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  60000, // pmax
   0, // lt
   500, // gt
   1, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -147,13 +147,13 @@ Resource R3325_0_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   10000, // gt
-  100, // st
+  50, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   ain_type, // type
   56, // gpio_pin
@@ -183,13 +183,13 @@ Resource R3325_1_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   10000, // gt
-  100, // st
+  50, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   ain_type, // type
   54, // gpio_pin
@@ -219,13 +219,13 @@ Resource R3325_2_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   10000, // gt
-  100, // st
+  50, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   ain_type, // type
   55, // gpio_pin
@@ -237,7 +237,7 @@ Resource R3325_2_5700 = {
   NULL, // *onupdate
   NULL // *onreport
 };
-/*
+///*
 // SGP30 COeq
 Resource R3325_3_5700 = {
   3325,  // objid
@@ -255,13 +255,13 @@ Resource R3325_3_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   60000, // gt
-  1000, // st
+  50, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -282,7 +282,7 @@ Resource R3325_4_5700 = {
   num_type, // type
   0, // v
   0, //vmin
-  60, //vmax
+  60000, //vmax
   "", // vs
   0, // max_strlen
   0, // vb
@@ -291,13 +291,13 @@ Resource R3325_4_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
-  60, // gt
-  1, // st
+  60000, // gt
+  20, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -309,7 +309,7 @@ Resource R3325_4_5700 = {
   NULL, // *onupdate
   NULL // *onreport
 };
-*/ /*
+//*/ /*
 // MiCS-6814 CO
 Resource R3325_5_5700 = {
   3325,  // objid
@@ -327,13 +327,13 @@ Resource R3325_5_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   1000, // gt
-  10, // st
+  20, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -363,13 +363,13 @@ Resource R3325_6_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   10, // gt
-  0.1, // st
+  0.2, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -399,13 +399,13 @@ Resource R3325_7_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   10, // gt
-  0.1, // st
+  1, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -435,13 +435,13 @@ Resource R3325_8_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   1000, // gt
-  10, // st
+  2, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -471,13 +471,13 @@ Resource R3325_9_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   500, // gt
-  10, // st
+  1, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -507,13 +507,13 @@ Resource R3325_10_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
-  1000, // gt
-  10, // st
+  5000000, // gt
+  100000, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -543,13 +543,13 @@ Resource R3325_11_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   1000, // gt
-  10, // st
+  300, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -579,13 +579,13 @@ Resource R3325_12_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   10000, // gt
-  10, // st
+  200, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -597,7 +597,7 @@ Resource R3325_12_5700 = {
   NULL, // *onupdate
   NULL // *onreport
 };
-*/
+//*/
 // WSP2110
 Resource R3325_13_5700 = {
   3325,  // objid
@@ -615,13 +615,13 @@ Resource R3325_13_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   50, // gt
   0.5, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   ain_type, // type
   58, // gpio_pin
@@ -651,13 +651,13 @@ Resource R3325_14_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   1000, // gt
-  10, // st
+  20, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   ain_type, // type
   57, // gpio_pin
@@ -687,13 +687,13 @@ Resource R3325_15_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   500, // gt
-  1, // st
+  10, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -723,13 +723,13 @@ Resource R3325_16_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   500, // gt
-  1, // st
+  10, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -759,13 +759,13 @@ Resource R3325_17_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   500, // gt
-  1, // st
+  10, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -795,13 +795,13 @@ Resource R3315_0_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  30000, // pmax
   0, // lt
   500, // gt
-  1, // st
+  .5, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
   func_type, // type
   0, // gpio_pin
@@ -814,41 +814,6 @@ Resource R3315_0_5700 = {
   NULL // *onreport
 };
 
-// test
-Resource R3315_0_5750 = {
-  3315,  // objid
-  0,  // objinst
-  5750, // resid
-  str_type, // type
-  0, // v
-  0, //vmin
-  0, //vmax
-  "test", // vs
-  0, // max_strlen
-  0, // vb
-  0, // invert
-  0, // last_rep_v
-  "", // last_rep_vs
-  0, // last_rep_vb
-  0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
-  0, // lt
-  0, // gt
-  0, // st
-  false, // band
-  1000, // sample_interval
-  0, // last_sample_time
-  func_type, // type
-  0, // gpio_pin
-  0, // vmin_counts
-  0, // vmax_counts
-  NULL, // *init_function
-  NULL, // *sample_function
-  test_string_return, // *sample function for boolean or string
-  NULL, // *onupdate
-  NULL // *onreport
-};
 
 Resource * resource_list[] = {
   &R3303_0_5700,
@@ -856,21 +821,20 @@ Resource * resource_list[] = {
   &R3325_0_5700,
   &R3325_1_5700,
   &R3325_2_5700,
-//  &R3325_3_5700,
-//  &R3325_4_5700,
-//  &R3325_5_5700,
-//  &R3325_6_5700,
-//  &R3325_7_5700,
-//  &R3325_8_5700,
-//  &R3325_9_5700,
-//  &R3325_10_5700,
-//  &R3325_11_5700,
-//  &R3325_12_5700,
+  &R3325_3_5700,
+  &R3325_4_5700,
+  &R3325_5_5700,
+  &R3325_6_5700,
+  &R3325_7_5700,
+  &R3325_8_5700,
+  &R3325_9_5700,
+  &R3325_10_5700,
+  &R3325_11_5700,
+  &R3325_12_5700,
   &R3325_13_5700,
   &R3325_14_5700,
   &R3325_15_5700,
   &R3325_16_5700,
   &R3325_17_5700,
-  &R3315_0_5700,
-  &R3315_0_5750
+  &R3315_0_5700
 };

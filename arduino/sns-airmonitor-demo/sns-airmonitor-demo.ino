@@ -103,24 +103,31 @@ void process_item( CborObject item ) {
  */
 unsigned int report_resource (Resource * resource, Stream *s) {
 
+  s->print ("[{\"bn\":\"");
   s->print (resource->objid);
   s->print ("/");
   s->print (resource->objinst);
   s->print ("/");
   s->print (resource->resid);
-  s->print (": ");
+  s->print ("\",\"");
 
   if ( num_type == resource->type ) {
-    s->println(resource->v);
+    s->print("v\":");
+    s->print(resource->v);
+    s->println("}]");
     resource->last_rep_v = resource->v;
   }
   else if ( str_type == resource->type ) {
-    s->println(resource->vs);
+    s->print("vs\":\"");
+    s->print(resource->vs);
+    s->println("\"}]");
     resource->last_rep_vs = resource->vs;
   }
 
   else if ( bool_type == resource->type ) {
-    s->println(resource->vb ? "true" : "false");
+    s->print("vb\":");
+    s->print(resource->vb ? "true" : "false");
+    s->println("}]");
     resource->last_rep_vb = resource->vb;
   }
   resource->last_rep_time = resource->last_sample_time;
@@ -144,8 +151,7 @@ but this can be adapted to various sensors.
 
   else if ( ain_type == resource->gpio ) {
     // read analog input gpio
-    int counts = round ( ( (float) rand() / (float) RAND_MAX ) * 1023 );
-    // int counts = analogRead(resource->gpio_pin);
+    int counts = analogRead(resource->gpio_pin);
     // pre-calculate the counts scale and the value scale
     int count_scale = resource->vmax_counts - resource->vmin_counts;
     float v_scale = resource->vmax - resource->vmin;
@@ -158,8 +164,7 @@ but this can be adapted to various sensors.
   }
   else if ( din_type == resource->gpio ) {
     // read gpio pin and apply the inversion parameter
-    resource->vb = resource->invert ^ (unsigned char) round ( (float) rand() / (float) RAND_MAX );
-    // resource->vb = resource->invert ^ digitalRead(resource->gpio_pin);
+    resource->vb = resource->invert ^ digitalRead(resource->gpio_pin);
     return(true);
   }
   else if ( ser_type == resource->gpio ) {
