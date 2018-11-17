@@ -168,13 +168,13 @@ but this can be adapted to various sensors.
   else if ( func_type == resource->gpio ) {
     
     if (num_type == resource->type ) {
-      resource->v = resource->sample_function(resource);
+      resource->v = resource->sample_function();
     }
     else if ( str_type == resource->type ) {
-      resource->vs = resource->sample_function(resource);
+      resource->vs = resource->int_sample_function();
     }
     else if ( bool_type == resource->type ) {
-      resource->vb = resource->sample_function(resource);
+      resource->vb = resource->int_sample_function();
     }
     return(true); // handle function call interface
   }
@@ -245,7 +245,7 @@ unsigned int init_resource (Resource * resource) {
     return(true);
   }
   if (NULL != resource->init_function) {
-    resource->init_function(resource);
+    resource->init_function();
   }
   return(true);
 }
