@@ -44,11 +44,11 @@ void pms5003_process_buffer() {
     pms5003_buffer_u16[i] = pms5003_buffer[2 + i*2 + 1];
     pms5003_buffer_u16[i] += (pms5003_buffer[2 + i*2] << 8);
   }
- 
-  // load the struct
-  memcpy((void *)&pms5003_data, (void *)pms5003_buffer_u16, 30);
- 
-  if (sum != pms5003_data.checksum) {
+  if (sum == pms5003_buffer_u16[14]) {
+    // load the struct
+    memcpy((void *)&pms5003_data, (void *)pms5003_buffer_u16, 30);
+  }
+  else {
     Serial.println("Checksum failure");
   }
   return;
@@ -75,15 +75,15 @@ void serialEvent3() {
   }
 }
 
-uint16_t pms5003_get_pm1_0(){
+float pms5003_get_pm1_0(){
   return(pms5003_data.pm10_standard); // ug/m3
 }
 
-uint16_t pms5003_get_pm2_5(){
+float pms5003_get_pm2_5(){
   return(pms5003_data.pm25_standard); // ug/m3
 }
 
-uint16_t pms5003_get_pm10_0(){
+float pms5003_get_pm10_0(){
   return(pms5003_data.pm100_standard); // ug/m3
 }
 
@@ -107,7 +107,7 @@ float am2302_get_humidity() {
   return(dht.readHumidity());  // %RH
 }
 
-
+/*
 // sgp30
 #include "Adafruit_SGP30.h"
 Adafruit_SGP30 sgp30;
@@ -135,7 +135,7 @@ float sgp30_get_tvoc() {
   return(sgp30.TVOC/1000.0); // ppb converted to to ppm
 }
 
-
+*/ /*
 // mics 6814
 #include "MutichannelGasSensor.h"
 
@@ -176,7 +176,7 @@ float mics6814_get_c3h8() {
 float mics6814_get_c4h10() {
   return(gas.measure_C4H10());
 }
-
+*/
 
 // HP206C
 #include <HP20x_dev.h>
@@ -192,14 +192,18 @@ void hp206c_setup() {
 }
 
 float hp206c_get_temperature() {
-  return(((float)HP20x.ReadTemperature())/100.0 ); // C
+  return(HP20x.ReadTemperature()/100.0 ); // C
 }
 
 float hp206c_get_barometer() {
-  return(((float)HP20x.ReadPressure())/100.0 ); // hPa
+  return(HP20x.ReadPressure()/100.0 ); // hPa
 }
 
 float hp206c_get_altitude() {
-  return(((float)HP20x.ReadAltitude())/100.0 ); // m
+  return(HP20x.ReadAltitude()/100.0 ); // m
+}
+
+char* test_string_return() {
+  return("hPa");
 }
 

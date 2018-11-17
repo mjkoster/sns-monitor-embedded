@@ -47,10 +47,11 @@ typedef struct Resource {
     int vmin_counts; // a/d counts corresponding to vmin
     int vmax_counts; // a/d counts corresponding to vmax
 
-    void (*init_function)(Resource *); // pointer to function to initialize the gpio driver (if needed)
-    unsigned int (*sample_function)(Resource *); // pointer to a function to update resource->v
-    unsigned int (*onupdate)(Resource *); // pointer to a function call on updates
-    unsigned int (*onreport)(Resource *); // pointer to a function call on reports
+    void (*init_function)(); // pointer to function to initialize the gpio driver (if needed)
+    float (*sample_function)(); // pointer to a function to update resource->v 
+    unsigned int (*int_sample_function)(); // pointer to a function to update resource->vs, vb
+    unsigned int (*onupdate)(); // pointer to a function call on updates
+    unsigned int (*onreport)(); // pointer to a function call on reports
 };
 
 /*
@@ -74,11 +75,11 @@ Resource R3303_0_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   500, // gt
-  1, // st
+  2, // st
   false, // band
   1000, // sample_interval
   0, // last_sample_time
@@ -88,6 +89,7 @@ Resource R3303_0_5700 = {
   0, // vmax_counts
   am2302_setup, // *init_function
   am2302_get_temperature, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -109,8 +111,8 @@ Resource R3304_0_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   500, // gt
   1, // st
@@ -123,6 +125,7 @@ Resource R3304_0_5700 = {
   0, // vmax_counts
   NULL, // *init_function
   am2302_get_humidity, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -144,11 +147,11 @@ Resource R3325_0_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   10000, // gt
-  10, // st
+  100, // st
   false, // band
   1000, // sample_interval
   0, // last_sample_time
@@ -158,6 +161,7 @@ Resource R3325_0_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   NULL, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -179,11 +183,11 @@ Resource R3325_1_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   10000, // gt
-  10, // st
+  100, // st
   false, // band
   1000, // sample_interval
   0, // last_sample_time
@@ -193,6 +197,7 @@ Resource R3325_1_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   NULL, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -214,11 +219,11 @@ Resource R3325_2_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   10000, // gt
-  10, // st
+  100, // st
   false, // band
   1000, // sample_interval
   0, // last_sample_time
@@ -228,10 +233,11 @@ Resource R3325_2_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   NULL, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
-
+/*
 // SGP30 COeq
 Resource R3325_3_5700 = {
   3325,  // objid
@@ -249,11 +255,11 @@ Resource R3325_3_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   60000, // gt
-  100, // st
+  1000, // st
   false, // band
   1000, // sample_interval
   0, // last_sample_time
@@ -263,6 +269,7 @@ Resource R3325_3_5700 = {
   1023, // vmax_counts
   sgp30_setup, // *init_function
   sgp30_get_coeq, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -284,11 +291,11 @@ Resource R3325_4_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   60, // gt
-  0.5, // st
+  1, // st
   false, // band
   1000, // sample_interval
   0, // last_sample_time
@@ -298,10 +305,11 @@ Resource R3325_4_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   sgp30_get_tvoc, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
-
+*/ /*
 // MiCS-6814 CO
 Resource R3325_5_5700 = {
   3325,  // objid
@@ -319,8 +327,8 @@ Resource R3325_5_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   1000, // gt
   10, // st
@@ -333,6 +341,7 @@ Resource R3325_5_5700 = {
   1023, // vmax_counts
   mics6814_setup, // *init_function
   mics6814_get_co, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -354,8 +363,8 @@ Resource R3325_6_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   10, // gt
   0.1, // st
@@ -368,6 +377,7 @@ Resource R3325_6_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   mics6814_get_no2, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -389,8 +399,8 @@ Resource R3325_7_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   10, // gt
   0.1, // st
@@ -403,6 +413,7 @@ Resource R3325_7_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   mics6814_get_c2h5oh, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -424,8 +435,8 @@ Resource R3325_8_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   1000, // gt
   10, // st
@@ -438,6 +449,7 @@ Resource R3325_8_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   mics6814_get_h2, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -459,8 +471,8 @@ Resource R3325_9_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   500, // gt
   10, // st
@@ -473,6 +485,7 @@ Resource R3325_9_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   mics6814_get_nh3, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -494,8 +507,8 @@ Resource R3325_10_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   1000, // gt
   10, // st
@@ -508,6 +521,7 @@ Resource R3325_10_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   mics6814_get_ch4, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -529,8 +543,8 @@ Resource R3325_11_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   1000, // gt
   10, // st
@@ -543,6 +557,7 @@ Resource R3325_11_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   mics6814_get_c3h8, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -564,8 +579,8 @@ Resource R3325_12_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   10000, // gt
   10, // st
@@ -578,10 +593,11 @@ Resource R3325_12_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   mics6814_get_c4h10, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
-
+*/
 // WSP2110
 Resource R3325_13_5700 = {
   3325,  // objid
@@ -599,8 +615,8 @@ Resource R3325_13_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   50, // gt
   0.5, // st
@@ -613,6 +629,7 @@ Resource R3325_13_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   NULL, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -634,8 +651,8 @@ Resource R3325_14_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   1000, // gt
   10, // st
@@ -648,6 +665,7 @@ Resource R3325_14_5700 = {
   1023, // vmax_counts
   NULL, // *init_function
   NULL, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -669,8 +687,8 @@ Resource R3325_15_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   500, // gt
   1, // st
@@ -683,6 +701,7 @@ Resource R3325_15_5700 = {
   0, // vmax_counts
   pms5003_setup, // *init_function
   pms5003_get_pm1_0, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -704,8 +723,8 @@ Resource R3325_16_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   500, // gt
   1, // st
@@ -718,6 +737,7 @@ Resource R3325_16_5700 = {
   0, // vmax_counts
   NULL, // *init_function
   pms5003_get_pm2_5, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -739,8 +759,8 @@ Resource R3325_17_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   500, // gt
   1, // st
@@ -753,6 +773,7 @@ Resource R3325_17_5700 = {
   0, // vmax_counts
   NULL, // *init_function
   pms5003_get_pm10_0, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
@@ -774,8 +795,8 @@ Resource R3315_0_5700 = {
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
+  2000, // pmin
+  10000, // pmax
   0, // lt
   500, // gt
   1, // st
@@ -788,10 +809,46 @@ Resource R3315_0_5700 = {
   0, // vmax_counts
   hp206c_setup, // *init_function
   hp206c_get_barometer, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
 
+// test
+Resource R3315_0_5750 = {
+  3315,  // objid
+  0,  // objinst
+  5750, // resid
+  str_type, // type
+  0, // v
+  0, //vmin
+  0, //vmax
+  "test", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  2000, // pmin
+  10000, // pmax
+  0, // lt
+  0, // gt
+  0, // st
+  false, // band
+  1000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  0, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  test_string_return, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
 
 Resource * resource_list[] = {
   &R3303_0_5700,
@@ -799,20 +856,21 @@ Resource * resource_list[] = {
   &R3325_0_5700,
   &R3325_1_5700,
   &R3325_2_5700,
-  &R3325_3_5700,
-  &R3325_4_5700,
-  &R3325_5_5700,
-  &R3325_6_5700,
-  &R3325_7_5700,
-  &R3325_8_5700,
-  &R3325_9_5700,
-  &R3325_10_5700,
-  &R3325_11_5700,
-  &R3325_12_5700,
+//  &R3325_3_5700,
+//  &R3325_4_5700,
+//  &R3325_5_5700,
+//  &R3325_6_5700,
+//  &R3325_7_5700,
+//  &R3325_8_5700,
+//  &R3325_9_5700,
+//  &R3325_10_5700,
+//  &R3325_11_5700,
+//  &R3325_12_5700,
   &R3325_13_5700,
   &R3325_14_5700,
   &R3325_15_5700,
   &R3325_16_5700,
   &R3325_17_5700,
-  &R3315_0_5700
+  &R3315_0_5700,
+  &R3315_0_5750
 };
