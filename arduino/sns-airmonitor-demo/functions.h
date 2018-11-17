@@ -107,7 +107,7 @@ float am2302_get_humidity() {
   return(dht.readHumidity());  // %RH
 }
 
-/*
+///*
 // sgp30
 #include "Adafruit_SGP30.h"
 Adafruit_SGP30 sgp30;
@@ -132,10 +132,10 @@ float sgp30_get_tvoc() {
     Serial.println("Measurement failed");
     return(-1);
   }
-  return(sgp30.TVOC/1000.0); // ppb converted to to ppm
+  return(sgp30.TVOC); // ppb
 }
 
-*/ /*
+//*/ /*
 // mics 6814
 #include "MutichannelGasSensor.h"
 
@@ -176,7 +176,7 @@ float mics6814_get_c3h8() {
 float mics6814_get_c4h10() {
   return(gas.measure_C4H10());
 }
-*/
+//*/
 
 // HP206C
 #include <HP20x_dev.h>
@@ -201,9 +201,5 @@ float hp206c_get_barometer() {
 
 float hp206c_get_altitude() {
   return(HP20x.ReadAltitude()/100.0 ); // m
-}
-
-char* test_string_return() {
-  return("hPa");
 }
 
