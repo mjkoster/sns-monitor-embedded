@@ -47,62 +47,28 @@ typedef struct Resource {
     int vmin_counts; // a/d counts corresponding to vmin
     int vmax_counts; // a/d counts corresponding to vmax
 
-    void (*init_function)(Resource *); // pointer to function to initialize the gpio driver (if needed)
-    unsigned int (*sample_function)(Resource *); // pointer to a function to update resource->v
-    unsigned int (*onupdate)(Resource *); // pointer to a function call on updates
-    unsigned int (*onreport)(Resource *); // pointer to a function call on reports
+    void (*init_function)(); // pointer to function to initialize the gpio driver (if needed)
+    float (*sample_function)(); // pointer to a function to update resource->v 
+    unsigned int (*int_sample_function)(); // pointer to a function to update resource->vs, vb
+    unsigned int (*onupdate)(); // pointer to a function call on updates
+    unsigned int (*onreport)(); // pointer to a function call on reports
 };
 
 /*
  * resource instances
  */
 
-unsigned int run_hot_cold (Resource * r);
-
-Resource R3300_0_5700 = {
-  3300,  // objid
+// am2302 temperature
+Resource R3303_0_5700 = {
+  3303,  // objid
   0,  // objinst
   5700, // resid
   num_type, // type
-  50, // v
-  0, //vmin
-  100, //vmax
-  "", // vs
-  0, // max_strlen
-  0, // vb
-  0, // invert
-  50, // last_rep_v
-  "", // last_rep_vs
-  0, // last_rep_vb
-  0, // last_rep_time
-  1000, // pmin
-  5000, // pmax
-  20, // lt
-  80, // gt
-  1, // st
-  true, // band
-  1000, // sample_interval
-  0, // last_sample_time
-  ain_type, // gpio
-  14, // gpio_pin
-  0, // vmin_counts
-  1023, // vmax_counts
-  NULL, // *init_function
-  NULL, // *sample_function
-  NULL, // *onupdate
-  NULL // *onreport
-};
-
-Resource R3300_1_5700 = {
-  3300,  // objid
-  1,  // objinst
-  5700, // resid
-  str_type, // type
   0, // v
   0, //vmin
-  0, //vmax
+  500, //vmax
   "", // vs
-  10, // max_strlen
+  0, // max_strlen
   0, // vb
   0, // invert
   0, // last_rep_v
@@ -110,59 +76,765 @@ Resource R3300_1_5700 = {
   0, // last_rep_vb
   0, // last_rep_time
   5000, // pmin
-  10000, // pmax
+  60000, // pmax
   0, // lt
-  0, // gt
-  0, // st
+  500, // gt
+  1, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
-  func_type, // gpio
+  func_type, // type
   0, // gpio_pin
   0, // vmin_counts
   0, // vmax_counts
-  NULL, // *init_function
-  run_hot_cold, // *sample_function
+  am2302_setup, // *init_function
+  am2302_get_temperature, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
 
-Resource R3300_2_5700 = {
-  3300,  // objid
-  2,  // objinst
+// am2302 humidity
+Resource R3304_0_5700 = {
+  3304,  // objid
+  0,  // objinst
   5700, // resid
-  bool_type, // type
+  num_type, // type
   0, // v
   0, //vmin
-  0, //vmax
+  500, //vmax
   "", // vs
-  10, // max_strlen
-  false, // vb
-  false, // invert
+  0, // max_strlen
+  0, // vb
+  0, // invert
   0, // last_rep_v
   "", // last_rep_vs
   0, // last_rep_vb
   0, // last_rep_time
-  2000, // pmin
-  10000, // pmax
+  5000, // pmin
+  60000, // pmax
   0, // lt
-  0, // gt
-  0, // st
+  500, // gt
+  1, // st
   false, // band
-  1000, // sample_interval
+  5000, // sample_interval
   0, // last_sample_time
-  din_type, // gpio
-  5, // gpio_pin
+  func_type, // type
+  0, // gpio_pin
   0, // vmin_counts
   0, // vmax_counts
   NULL, // *init_function
-  NULL, // *sample_function
+  am2302_get_humidity, // *sample_function
+  NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
 
+// MQ-5
+Resource R3325_0_5700 = {
+  3325,  // objid
+  0,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  10000, // gt
+  50, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  56, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MQ-9
+Resource R3325_1_5700 = {
+  3325,  // objid
+  1,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  10000, // gt
+  50, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  54, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MQ-2
+Resource R3325_2_5700 = {
+  3325,  // objid
+  2,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  10000, // gt
+  50, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  55, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+///*
+// SGP30 COeq
+Resource R3325_3_5700 = {
+  3325,  // objid
+  3,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  60000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  60000, // gt
+  50, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  sgp30_setup, // *init_function
+  sgp30_get_coeq, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// SGP30 TVOC
+Resource R3325_4_5700 = {
+  3325,  // objid
+  4,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  60000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  60000, // gt
+  20, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  sgp30_get_tvoc, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+//*/ /*
+// MiCS-6814 CO
+Resource R3325_5_5700 = {
+  3325,  // objid
+  5,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  1000, // gt
+  20, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  mics6814_setup, // *init_function
+  mics6814_get_co, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 N02
+Resource R3325_6_5700 = {
+  3325,  // objid
+  6,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  10, // gt
+  0.2, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  mics6814_get_no2, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 C2H6OH
+Resource R3325_7_5700 = {
+  3325,  // objid
+  7,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  10, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  10, // gt
+  1, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  mics6814_get_c2h5oh, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 H2
+Resource R3325_8_5700 = {
+  3325,  // objid
+  8,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  1000, // gt
+  2, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  mics6814_get_h2, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 NH3
+Resource R3325_9_5700 = {
+  3325,  // objid
+  9,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  500, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  500, // gt
+  1, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  mics6814_get_nh3, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 CH4
+Resource R3325_10_5700 = {
+  3325,  // objid
+  10,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  5000000, // gt
+  100000, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  mics6814_get_ch4, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 C3H8
+Resource R3325_11_5700 = {
+  3325,  // objid
+  11,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  1000, // gt
+  300, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  mics6814_get_c3h8, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MiCS-6814 C4H10
+Resource R3325_12_5700 = {
+  3325,  // objid
+  12,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  10000, // gt
+  200, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  mics6814_get_c4h10, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+//*/
+// WSP2110
+Resource R3325_13_5700 = {
+  3325,  // objid
+  13,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  50, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  50, // gt
+  0.5, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  58, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// MP503
+Resource R3325_14_5700 = {
+  3325,  // objid
+  14,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  1000, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  1000, // gt
+  20, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  ain_type, // type
+  57, // gpio_pin
+  0, // vmin_counts
+  1023, // vmax_counts
+  NULL, // *init_function
+  NULL, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// pms5003 PM1.0
+Resource R3325_15_5700 = {
+  3325,  // objid
+  15,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  500, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  500, // gt
+  10, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  0, // vmax_counts
+  pms5003_setup, // *init_function
+  pms5003_get_pm1_0, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// pms5003 PM2.5
+Resource R3325_16_5700 = {
+  3325,  // objid
+  16,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  500, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  500, // gt
+  10, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  0, // vmax_counts
+  NULL, // *init_function
+  pms5003_get_pm2_5, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// pms5003 PM10
+Resource R3325_17_5700 = {
+  3325,  // objid
+  17,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  0, //vmin
+  500, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  500, // gt
+  10, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  0, // vmax_counts
+  NULL, // *init_function
+  pms5003_get_pm10_0, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+// hp206c
+Resource R3315_0_5700 = {
+  3315,  // objid
+  0,  // objinst
+  5700, // resid
+  num_type, // type
+  0, // v
+  900, //vmin
+  1100, //vmax
+  "", // vs
+  0, // max_strlen
+  0, // vb
+  0, // invert
+  0, // last_rep_v
+  "", // last_rep_vs
+  0, // last_rep_vb
+  0, // last_rep_time
+  5000, // pmin
+  30000, // pmax
+  0, // lt
+  500, // gt
+  .5, // st
+  false, // band
+  5000, // sample_interval
+  0, // last_sample_time
+  func_type, // type
+  0, // gpio_pin
+  0, // vmin_counts
+  0, // vmax_counts
+  hp206c_setup, // *init_function
+  hp206c_get_barometer, // *sample_function
+  NULL, // *sample function for boolean or string
+  NULL, // *onupdate
+  NULL // *onreport
+};
+
+
 Resource * resource_list[] = {
-  &R3300_0_5700,
-  &R3300_1_5700,
-  &R3300_2_5700
+  &R3303_0_5700,
+  &R3304_0_5700,
+  &R3325_0_5700,
+  &R3325_1_5700,
+  &R3325_2_5700,
+  &R3325_3_5700,
+  &R3325_4_5700,
+  &R3325_5_5700,
+  &R3325_6_5700,
+  &R3325_7_5700,
+  &R3325_8_5700,
+  &R3325_9_5700,
+  &R3325_10_5700,
+  &R3325_11_5700,
+  &R3325_12_5700,
+  &R3325_13_5700,
+  &R3325_14_5700,
+  &R3325_15_5700,
+  &R3325_16_5700,
+  &R3325_17_5700,
+  &R3315_0_5700
 };
