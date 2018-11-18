@@ -195,7 +195,7 @@ bool notifiable( Resource * r ) {
 #define STRING_TYPE ( str_type == r->type )
 #define BOOLEAN_TYPE ( bool_type == r->type )
 #define PMIN_EX ( r->last_sample_time - r->last_rep_time >= r->pmin )
-#define PMAX_EX ( r->last_sample_time - r->last_rep_time > r->pmax )
+#define PMAX_EX ( r->last_sample_time - r->last_rep_time >= r->pmax )
 #define LT_EX ( r->v < r->lt ^ r->last_rep_v < r->lt )
 #define GT_EX ( r->v > r->gt ^ r->last_rep_v > r->gt )
 #define ST_EX ( abs( r->v - r->last_rep_v ) >= r->st )
