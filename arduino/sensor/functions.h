@@ -150,7 +150,7 @@ float mics6814_get_co() {
 }
 
 float mics6814_get_no2() {
-  return(gas.measure_NH3());
+  return(gas.measure_NH3()); //is this a typo?
 }
 
 float mics6814_get_c2h5oh() {

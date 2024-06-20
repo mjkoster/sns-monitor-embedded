@@ -1,7 +1,30 @@
 /*
  * Resource type specific functions and handlers
  */
+// 
 
+#include <Adafruit_AHTX0.h>
+
+Adafruit_AHTX0 aht20;
+
+void aht20_setup() {
+  aht20.begin();
+  return;
+}
+
+float aht20_get_temperature() {
+  sensors_event_t temp, humidity;
+  aht20.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
+  return(temp.temperature); // C
+}
+
+float aht20_get_humidity() {
+  sensors_event_t temp, humidity;
+  aht20.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
+  return(humidity.relative_humidity);  // %RH
+}
+
+/*
 // am2315
 #include <Wire.h>
 #include <Adafruit_AM2315.h>
@@ -44,6 +67,7 @@ float si1145_get_ir() {
 float si1145_get_uv() {
   return((float)SI1145.ReadUV()/100); 
 }
+*/
 
 // weather rack
 #include <Wire.h>

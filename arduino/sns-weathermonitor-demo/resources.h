@@ -89,14 +89,14 @@ Resource R3303_1_5700 = {
   0, // gpio_pin
   0, // vmin_counts
   0, // vmax_counts
-  am2315_setup, // *init_function
-  am2315_get_temperature, // *sample_function
+  aht20_setup, // *init_function
+  aht20_get_temperature, // *sample_function
   NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
 
-// am2302 humidity
+// am2315 humidity
 Resource R3304_1_5700 = {
   3304,  // objid
   1,  // objinst
@@ -126,12 +126,12 @@ Resource R3304_1_5700 = {
   0, // vmin_counts
   0, // vmax_counts
   NULL, // *init_function
-  am2315_get_humidity, // *sample_function
+  aht20_get_humidity, // *sample_function
   NULL, // *sample function for boolean or string
   NULL, // *onupdate
   NULL // *onreport
 };
-
+/*
 // si1145 visible light
 Resource R3301_0_5700 = {
   3301,  // objid
@@ -311,7 +311,7 @@ Resource R3200_0_5500 = {
   NULL, // *onupdate
   NULL // *onreport
 };
-
+*/
 // depth mm (rain total)
 Resource R3319_0_5700 = {
   3319,  // objid
@@ -459,11 +459,11 @@ Resource R3346_1_5700 = {
 Resource * resource_list[] = {
   &R3303_1_5700,
   &R3304_1_5700,
-  &R3301_0_5700,
-  &R3301_1_5700,
-  &R3301_2_5700,
-  &R3324_0_5700,
-  &R3200_0_5500,
+  //&R3301_0_5700,
+  //&R3301_1_5700,
+  //&R3301_2_5700,
+  //&R3324_0_5700,
+  //&R3200_0_5500,
   &R3319_0_5700,
   &R3332_0_5700,
   &R3346_0_5700, 

@@ -3,23 +3,24 @@ WoT Plugfest Arduino Sensors demo
  */
 
 // gpio sensor variables
-int spl_pin = A0;
+int pm2_5_pin = A4;
+int led_pin = A3;
 int illuminance_pin = A1;
 int motion_pin = 7;
-int illuminance, motion, spl, last_illuminance, last_motion, last_spl = 0;
-int illuminance_step = 50; 
-int spl_step = 10;
+int illuminance, motion, pm2_5_counts, last_illuminance, last_motion, last_pm2_5 = 0;
+int illuminance_step = 10; 
+int pm2_5_step = 2;
 float illuminance_scale = .12;
-float spl_scale = 1;
+float pm2_5_scale = 10.74;
+int pm2_5_mincounts = 7;
+int pm2_5_maxcounts = int(3600.0/11.0 * 1024.0/5.0);
 
 // DHT humidity and temperature sensor
 int dht_pin = 2;
 
 // sampling interval parameters
 unsigned long starttime;
-unsigned long sampletime = 200;
-unsigned long dust_starttime;
-unsigned long dust_sampletime_ms = 30000;
+unsigned long sampletime = 1000;
 
 void setup() {
   Serial.begin(9600);
@@ -27,8 +28,10 @@ void setup() {
  
   // Pin modes
   pinMode(motion_pin,INPUT);
-  pinMode(spl_pin,INPUT);
+  pinMode(pm2_5_pin,INPUT);
   pinMode(illuminance_pin,INPUT);
+  pinMode(led_pin, OUTPUT);
+  digitalWrite(led_pin, LOW);
  
 }
 
@@ -43,8 +46,11 @@ void loop() {
 // read current sensor state from pins
     motion = digitalRead(motion_pin);
     illuminance = analogRead(illuminance_pin);
-    spl = analogRead(spl_pin);
-
+    digitalWrite(led_pin, HIGH);
+    delayMicroseconds(280);
+    pm2_5_counts = analogRead(pm2_5_pin);
+    digitalWrite(led_pin, LOW);
+ 
 // only report changes >= step
     if (motion != last_motion)
     {
@@ -62,12 +68,12 @@ void loop() {
       last_illuminance = illuminance;
     }
     
-    if ( (spl > last_spl + spl_step) || (spl < last_spl - spl_step) )
+    if ( (pm2_5_counts > last_pm2_5 + pm2_5_step) || (pm2_5_counts < last_pm2_5 - pm2_5_step) )
     {
-      Serial.print("SPL ");
-      Serial.print( float(spl*spl_scale));
+      Serial.print("PM2.5 ");
+      Serial.print( float((pm2_5_counts-pm2_5_mincounts)*pm2_5_scale));
       Serial.println(" ");
-      last_spl = spl;
+      last_pm2_5 = pm2_5_counts;
     }    
     starttime = millis();
   } 
