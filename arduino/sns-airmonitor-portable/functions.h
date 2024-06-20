@@ -25,10 +25,10 @@ void pms5003_setup() {
   //setup the input buffer
   pms5003_buffer_index = 0;
   Serial3.begin(9600);
-  pinMode(2, OUTPUT); // put it in and out of sleep mode to synchronize the output
-  digitalWrite(2, LOW);
-  delayMicroseconds(100);
-  digitalWrite(2, HIGH);
+  //pinMode(2, OUTPUT); // put it in and out of sleep mode to synchronize the output
+  //digitalWrite(2, LOW);
+  //delayMicroseconds(100);
+  //digitalWrite(2, HIGH);
 }
 
 void pms5003_process_buffer() {
@@ -158,19 +158,96 @@ float mics6814_get_c4h10() {
 }
 //*/
 
+// temp, humidity, barometer, gas
+
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include "Adafruit_BME680.h"
+
+Adafruit_BME680 bme; // I2C
+
 void bme680_setup() {
-  
+  if (!bme.begin()) {
+    Serial.println(F("Could not find a valid BME680 sensor, check wiring!"));
+    return;
+  }
+  bme.setTemperatureOversampling(BME680_OS_8X);
+  bme.setHumidityOversampling(BME680_OS_2X);
+  bme.setPressureOversampling(BME680_OS_4X);
+  bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
+  bme.setGasHeater(100, 1); // 320*C for 150 ms // don't use gas measurement 
 }
 
 float bme680_get_temperature() {
-  
+  return(bme.temperature);
 }
 
 float bme680_get_humidity() {
-  
+  return(bme.humidity);
 }
 
 float bme680_get_barometer() {
+  if (! bme.performReading()) {
+    Serial.println("Failed to perform reading :(");
+  }
+  return(bme.pressure / 100.0);
+}
+
+// air quality sensor
+void ccs811_setup() {
   
 }
+
+float ccs811_get_eCO2() {
+  
+}
+
+float ccs811_get_tvoc() {
+  
+}
+
+// luminance sensor
+#include <Wire.h>
+#include <Digital_Light_TSL2561.h>
+//#include <Digital_Light_ISL29035.h>
+
+void tsl2561_setup() {
+  Wire.begin();
+  TSL2561.init();
+  //ISL29035.init();
+}
+
+float tsl2561_get_illuminance() {
+  return(TSL2561.readVisibleLux());
+  //return(ISL29035.readVisibleLux());
+}
+
+
+// RGB LED on frontpanel
+
+#include <ChainableLED.h>
+ChainableLED rgb_led (4, 5, 1);
+
+void rgb_led_setup() {
+  rgb_led.setColorRGB(0,0,0,0);
+}
+
+float rgb_led_set_color() {
+  rgb_led.setColorRGB(0,0,0,0);
+}
+
+
+// 10 segment LED bargraph
+#include <Grove_LED_Bar.h>
+Grove_LED_Bar led_bar(7, 6, 0);
+
+void bargraph_led_setup() {
+  led_bar.begin();
+  led_bar.setLevel(0);
+}
+
+float bargraph_led_set_level() {
+  led_bar.setLevel(0);
+}
+
 
