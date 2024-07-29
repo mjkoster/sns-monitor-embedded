@@ -47,7 +47,6 @@ char msg[256];
 uint16_t counts = 0;
 
 float pressure=0, flowrate=0, level=0, volume=0;
-char* timestring = "00:00:00";
 
 JsonDocument report;
 JsonDocument update;
@@ -104,28 +103,36 @@ void callback(char* topic, byte* message, unsigned int length) {
   }
   Serial.println();
 
+  char pb[10];
+
   if (String(topic) == "tankLevel") {
   // parse the messageTemp JSON and extract time string and level + volume estimates
   deserializeJson(update, messageTemp);
   const char* time = update["time"];
   level = update["level"];
   volume = update["volume"];
+  Serial.print("Time: ");
+  Serial.println(time);
 
   // update the display
 
-    display.setCursor(TIME_POS);
-    display.print(time);
+  display.setCursor(TIME_POS);
+  display.print(time);
 
-    display.setCursor(LEVEL_POS);
-    display.setFont(&FreeSans9pt7b);
-    display.print(level);
-    display.setFont();  
+  display.setCursor(LEVEL_POS);
+  display.setFont(&FreeSans9pt7b);
+  display.fillRect(60,15,38,20,SH110X_BLACK);
+  sprintf(pb, "%3.0f", level);
+  display.print(pb);
+  display.setFont();  
 
-    display.setCursor(VOLUME_POS);
-    display.setFont(&FreeSans9pt7b);
-    display.print(volume);
-    display.setFont();  
-
+  display.setCursor(VOLUME_POS);
+  display.setFont(&FreeSans9pt7b);
+  display.fillRect(53,40,45,20,SH110X_BLACK);
+  sprintf(pb, "%4.0f", volume);
+  display.print(pb);
+  display.setFont();  
+  display.display();
   }
   else if (String(topic) == "flowRate") {
   // parse the JSON and extract flow rate value
@@ -134,9 +141,11 @@ void callback(char* topic, byte* message, unsigned int length) {
   // update the display
   display.setCursor(FLOW_POS);
   display.setFont(&FreeSans9pt7b);
-  display.print(flowrate);
-  display.setFont();  
-
+  display.fillRect(0,40,28,20,SH110X_BLACK);
+  sprintf(pb, "%01.1f", flowrate);
+  display.print(pb);
+  display.setFont(); 
+  display.display();
   }
 }
 
@@ -169,7 +178,7 @@ void display_static() {
 
   display.setCursor(PRES_POS);
   display.setFont(&FreeSans9pt7b);
-  display.print("00.0");
+  display.print("--.-");
   display.setFont();  
 
   display.setCursor(40, 25);
@@ -177,18 +186,18 @@ void display_static() {
 
   display.setCursor(FLOW_POS);
   display.setFont(&FreeSans9pt7b);
-  display.print("0.0");
+  display.print("-.-");
   display.setFont();  
 
   display.setCursor(30, 50);
   display.print("gpm");
 
   display.setCursor(TIME_POS);
-  display.print(timestring);
+  display.print("--.--.--");
 
   display.setCursor(LEVEL_POS);
   display.setFont(&FreeSans9pt7b);
-  display.print("000");
+  display.print("---");
   display.setFont();  
 
   display.setCursor(100, 25);
@@ -196,7 +205,7 @@ void display_static() {
 
   display.setCursor(VOLUME_POS);
   display.setFont(&FreeSans9pt7b);
-  display.print("0000");
+  display.print("----");
   display.setFont();  
 
   display.setCursor(100, 50);
@@ -223,10 +232,14 @@ void loop() {
     Serial.print("Pressure = ");
     Serial.println(pressure);
     // update display
+    char pb[10];
+    sprintf(pb, "%02.1f", pressure);
     display.setCursor(PRES_POS);
     display.setFont(&FreeSans9pt7b);
-    display.print(pressure);
+    display.fillRect(0,15,35,20,SH110X_BLACK);
+    display.print(pb);
     display.setFont();
+    display.display();
 
     // encode as JSON
     report["pressure"] = pressure;
