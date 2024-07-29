@@ -4,7 +4,7 @@
 #include "Adafruit_ADS1X15.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
-#include <Fonts/FreeSans12pt7b.h>
+#include <Fonts/FreeSans9pt7b.h>
 #include <ArduinoJson.h>
 
 #define oled_Address 0x3c 
@@ -25,11 +25,11 @@
 #define UNIT_ZERO 0.0
 #define UNIT_SCALE 100.0
 
-#define PRES_POS 30,50
-#define FLOW_POS 1,50
-#define TIME_POS 50,1
-#define LEVEL_POS 60,30
-#define VOLUME_POS 90,30
+#define TIME_POS 65,1
+#define FLOW_POS 0,50
+#define PRES_POS 0,25
+#define LEVEL_POS 65,25
+#define VOLUME_POS 55,50
 
 const char* ssid = "ABRACADABRA-2G";
 const char* password = "OPENSESAME";
@@ -47,7 +47,7 @@ char msg[256];
 uint16_t counts = 0;
 
 float pressure=0, flowrate=0, level=0, volume=0;
-char* timestring = "2000-01-01 00:00:00";
+char* timestring = "00:00:00";
 
 JsonDocument report;
 JsonDocument update;
@@ -117,12 +117,12 @@ void callback(char* topic, byte* message, unsigned int length) {
     display.print(time);
 
     display.setCursor(LEVEL_POS);
-    display.setFont(&FreeSans12pt7b);
+    display.setFont(&FreeSans9pt7b);
     display.print(level);
     display.setFont();  
 
     display.setCursor(VOLUME_POS);
-    display.setFont(&FreeSans12pt7b);
+    display.setFont(&FreeSans9pt7b);
     display.print(volume);
     display.setFont();  
 
@@ -133,7 +133,7 @@ void callback(char* topic, byte* message, unsigned int length) {
   flowrate = update["flowrate"];
   // update the display
   display.setCursor(FLOW_POS);
-  display.setFont(&FreeSans12pt7b);
+  display.setFont(&FreeSans9pt7b);
   display.print(flowrate);
   display.setFont();  
 
@@ -164,43 +164,43 @@ void display_static() {
   display.setFont(); // default small text font
   display.setTextColor(SH110X_WHITE, SH110X_BLACK);
 
-  display.setCursor(10, 1);
+  display.setCursor(5, 1);
   display.print("current");
 
-  display.setCursor(FLOW_POS);
-  display.setFont(&FreeSans12pt7b);
-  display.print("00.0");
-  display.setFont();  
-
-  display.setCursor(5, 50);
-  display.print("gpm");
-
   display.setCursor(PRES_POS);
-  display.setFont(&FreeSans12pt7b);
+  display.setFont(&FreeSans9pt7b);
   display.print("00.0");
   display.setFont();  
 
-  display.setCursor(40, 50);
-  display.print("psig");
+  display.setCursor(40, 25);
+  display.print("psi");
+
+  display.setCursor(FLOW_POS);
+  display.setFont(&FreeSans9pt7b);
+  display.print("0.0");
+  display.setFont();  
+
+  display.setCursor(30, 50);
+  display.print("gpm");
 
   display.setCursor(TIME_POS);
   display.print(timestring);
 
   display.setCursor(LEVEL_POS);
-  display.setFont(&FreeSans12pt7b);
+  display.setFont(&FreeSans9pt7b);
   display.print("000");
   display.setFont();  
 
-  display.setCursor(70, 50);
+  display.setCursor(100, 25);
   display.print("%");
 
   display.setCursor(VOLUME_POS);
-  display.setFont(&FreeSans12pt7b);
-  display.print("000");
+  display.setFont(&FreeSans9pt7b);
+  display.print("0000");
   display.setFont();  
 
-  display.setCursor(95, 50);
-  display.print("gallons");
+  display.setCursor(100, 50);
+  display.print("gal");
 
   display.display();
 }
@@ -224,7 +224,7 @@ void loop() {
     Serial.println(pressure);
     // update display
     display.setCursor(PRES_POS);
-    display.setFont(&FreeSans12pt7b);
+    display.setFont(&FreeSans9pt7b);
     display.print(pressure);
     display.setFont();
 
