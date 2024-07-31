@@ -16,6 +16,7 @@
 
 #define LOOPTIME 1000 // 1 second 
 
+// parameteric scaling for A/D measurement
 #define VOLTS_ZERO 0.5
 #define VOLTS_SCALE 4.5
 #define AD_VOLTS 2.048
@@ -23,8 +24,9 @@
 #define COUNTS_ZERO ( (VOLTS_ZERO / AD_VOLTS) * AD_SCALE) // 16000.0
 #define COUNTS_SCALE ( (VOLTS_SCALE / AD_VOLTS) * AD_SCALE)// 144000.0
 #define UNIT_ZERO 0.0
-#define UNIT_SCALE 100.0
+#define UNIT_SCALE 100.0 // 100 psig sensor
 
+// dynamic data x,y position on screen
 #define TIME_POS 65,1
 #define FLOW_POS 0,50
 #define PRES_POS 0,25
